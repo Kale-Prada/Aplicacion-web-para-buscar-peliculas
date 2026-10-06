@@ -28,7 +28,7 @@ def year_checking():
             print(f"Error: El año debe estar entre 1888 y {actual_year}.")
             continue
     
-        # SOLUCIÓN: Si cumple con los requisitos, devolvemos la 'entrada' como STRING
+        # Si cumple con los requisitos, devolvemos la 'entrada' como STRING
         print(f"¡Correcto! Has introducido el año: {entrada}\n")
         return entrada
 
@@ -103,10 +103,7 @@ while True:
                 print(f"Clasificación: {finded.get('Rated', 'N/A')}")
                 print(f"Estreno: {finded.get('Released', 'N/A')}")
                 print(f"Duración: {finded.get('Runtime', 'N/A')}")
-                
-                # CORREGIDO: Cambiado de corchetes a .get() para evitar caídas imprevistas
                 print(f"Género: {finded.get('Genre', 'N/A')}")
-                
                 print(f"Director: {finded.get('Director', 'N/A')}")
                 print(f"Guionista/s: {finded.get('Writer', 'N/A')}")
                 print(f"Actores: {finded.get('Actors', 'N/A')}")
@@ -115,7 +112,7 @@ while True:
                 print(f"País: {finded.get('Country', 'N/A')}")
                 print(f"Premios: {finded.get('Awards', 'N/A')}")
 
-                # Sección de Notas técnicas
+                # Sección de Más información
                 print(f"Metascore: {finded.get('Metascore', 'N/A')}")
                 print(f"imdbRating: {finded.get('imdbRating', 'N/A')}")
                 print(f"imdbVotes: {finded.get('imdbVotes', 'N/A')}")
