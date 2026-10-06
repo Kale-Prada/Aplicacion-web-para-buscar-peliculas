@@ -21,7 +21,7 @@
 - Es necesario registrarse en https://www.omdbapi.com/ obtener una API key y así poder utilizar el OMDb de omdbapi.com que nos ayudará para obtener los datos para las funcionalidades para consumir la API con REQUEST:
 
     - Búsqueda de películas por titulo.
-    - Búsqueda de películas por año.
+    - Búsqueda de películas por título y año.
     - Dentro de la lista al darle click poder visualizar el detalle de la película seleccionada.
 
 **FUNCIONALIDADES - PARTE 2:**
