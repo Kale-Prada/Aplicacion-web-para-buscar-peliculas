@@ -3,9 +3,11 @@ from view import MovieView
 
 class MovieController:
     def __init__(self):
+        #Inicializo modelo y vista
         self.model = MovieModel()
         self.view = MovieView()
 
+    #Lógica de selección
     def run(self):
         while True:
             option = self.view.show_menu()
@@ -22,19 +24,11 @@ class MovieController:
                 except Exception:
                     self.view.show_error("Ocurrió un error inesperado al procesar la solicitud.")
 
-            # Opción: Buscar películas por año y una palabra clave (acerca del nombre o título de la película, por ejemplo)
-            #elif option == "2":
-            #    year_ok = self.view.request_year()
-            #    palabra_filtro = self.view.request_optional_keyword()
-            #    try:
-            #        api_response = self.model.search_movies_by_year(palabra_filtro, year_ok)
-            #        self._process_movie_selection(api_response)
-            #    except Exception:
-            #        self.view.show_error("Ocurrió un error inesperado al procesar la solicitud.")
-
-            # Opción 2: Buscar por título y año de la película de forma simultánea 
+            
             elif option == "2":
                 name_movie = self.view.request_movie_name()
+                
+                # Si el usuario no introduce por teclado el nombre, se comprueba 
                 if not name_movie:
                     self.view.show_error("Introduce nombre de película. No lo has hecho.")
                     continue
