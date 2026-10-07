@@ -18,7 +18,7 @@
 ## Detalles del programa:
 
 **FUNCIONALIDADES - PARTE 1:**
-- Es necesario registrarse en https://www.omdbapi.com/ obtener una API key y así poder utilizar el OMDb de omdbapi.com que nos ayudará para obtener los datos para las funcionalidades para consumir la API con REQUEST:
+- Es necesario registrarse en https://www.omdbapi.com/ obtener una API key y así poder utilizar el OMDb de omdbapi.com que nos ayudará para obtener los datos para las funcionalidades para consumir la API con la librería *request*:
 
     - Búsqueda de películas por titulo.
     - Búsqueda de películas por título y año.
