@@ -2,7 +2,7 @@
 
 CREATE TABLE "comentario" (
 	"id"	INTEGER,
-	"id_pelicula"	TEXT NOT NULL UNIQUE,
+	"id_pelicula"	TEXT NOT NULL,
 	"persona"	TEXT NOT NULL,
 	"comentario"	TEXT,
 	"fecha"	TEXT NOT NULL,
