@@ -2,7 +2,6 @@
 .DS_Store
 *.exe
 
-
 # Entornos virtuales
 venv/
 env/
@@ -37,3 +36,10 @@ wheels/
 
 # VS Code
 .vscode/
+
+# Personalizados 
+test.db 
+test.sqbpro 
+V1fastapi.py 
+sqlite_test.py 
+main_old.py
