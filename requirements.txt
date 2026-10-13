@@ -18,6 +18,7 @@ httpcore==1.0.9
 httptools==0.8.0
 httpx==0.28.1
 idna==3.20
+iniconfig==2.3.1
 Jinja2==3.1.6
 lance-namespace==0.13.0
 lance-namespace-urllib3-client==0.13.0
@@ -33,6 +34,8 @@ opentelemetry-exporter-otlp-proto-http==1.45.1
 opentelemetry-proto==1.45.1
 opentelemetry-sdk==1.45.1
 opentelemetry-semantic-conventions==0.66b1
+packaging==26.3
+pluggy==1.6.0
 protobuf==7.36.2
 pyarrow==25.0.1
 pydantic==2.13.5
@@ -41,6 +44,7 @@ pydantic-settings==2.15.0
 pydantic_core==2.46.5
 Pygments==2.21.0
 pylance==0.39.0
+pytest==9.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.4
 python-multipart==0.0.32
