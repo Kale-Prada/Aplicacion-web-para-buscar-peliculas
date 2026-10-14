@@ -10,13 +10,9 @@ CREATE TABLE "comentario" (
 );
 
 
-/*BBDD de Test*/ 
-
-CREATE TABLE "datospeople" (
+CREATE TABLE "usuario" (
 	"id"	INTEGER,
-	"name"	TEXT NOT NULL,
-	"lastname"	TEXT NOT NULL,
-	"dni"	TEXT NOT NULL UNIQUE,
-	"email"	INTEGER NOT NULL UNIQUE,
+	"nombre"	TEXT NOT NULL UNIQUE,
+	"password"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );

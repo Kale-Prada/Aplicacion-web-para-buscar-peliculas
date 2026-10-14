@@ -42,8 +42,8 @@ class DatabaseConnection:
 
     def _init_database(self):
         """
-        Crea la tabla 'comentario' si no existe en la base de datos.
-        #En mi ejercicio yo tengo creada la base de datos y la tabla "comentario" con SQlite. 
+        Crea las tablas 'comentario' y 'usuario' si no existe en la base de datos.
+        #En mi ejercicio yo tengo creada la base de datos y las tablas 'comentario' y 'usuario' con SQlite. 
         """
         query_tabla_comentario = """
             CREATE TABLE IF NOT EXISTS comentario (
@@ -56,19 +56,16 @@ class DatabaseConnection:
         """
         self.ejecutar_query(query_tabla_comentario)
 
+        #Creo la tabla 'usuario' para la autenticación, de esta manera 
+        #Cuando ya hayan introducido el usuario, se captura esta información si quieren poner un comentario. 
+        #Ya no les volverá a pedir el usuario o nombre. 
 
-    # Bloque de prueba local
-#if __name__ == "__main__":
-#    db = DatabaseConnection()
-#    resultados = db.ejecutar_query('SELECT * FROM comentario;')
-    
-#    print("\nResultados de la tabla comentario:")
-#    if not resultados:
-#        print("La tabla está vacía.")
- #   else:
-#        for row in resultados:
-            # Convertimos cada fila Row a un diccionario estándar de Python para ver sus valores
-#            print(dict(row))
-            
-            # O si prefieres mostrarlo de forma más personalizada:
-             #print(f"ID: {row['id']} | Película: {row['id_pelicula']} | Persona: {row['persona']} | Comentario: {row['comentario']} | Fecha: {row['fecha']}")
+        query_tabla_usuario = """
+            CREATE TABLE IF NOT EXISTS usuario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        """
+        self.ejecutar_query(query_tabla_usuario)
+

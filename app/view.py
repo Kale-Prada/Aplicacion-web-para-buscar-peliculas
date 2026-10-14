@@ -4,6 +4,21 @@
 from datetime import datetime
 
 class MovieView:
+    def request_user_credentials(self):
+        """
+        Solicita el nombre de usuario y contraseña (si no existe, se registrará).
+        """
+        print("\n==============================================")
+        print("          ACCESO / REGISTRO DE USUARIO        ")
+        print("================================================")
+        print("💡 Nota: Si el usuario no existe, se creará automáticamente.")
+        nombre = input("Introduce tu nombre de usuario: ").strip()
+        password = input("Introduce tu contraseña: ").strip()
+        return nombre, password
+
+    def show_welcome_user(self, nombre_usuario: str):
+        print(f"\n¡Bienvenido/a, {nombre_usuario}! Sesión iniciada correctamente.")
+        
     def show_menu(self):
         """Muestra el menú principal con opciones."""
         print("\n==============================================")
@@ -123,16 +138,18 @@ class MovieView:
                 print("-" * 35)
         print("===================================")
 
-    def prompt_add_comment(self):
+    
+
+    def prompt_add_comment(self, usuario_actual: str):
         """
-        Pregunta al usuario si desea dejar un comentario en la película elegida
+        Pregunta directamente al usuario autenticado si desea dejar un comentario 
+        usando el usuario de la sesión.
         """
-        desea_comentar = input("\n¿Deseas agregar un comentario sobre esta película? (s/n): ").strip().lower()
+        desea_comentar = input(f"\n¿Deseas agregar un comentario sobre esta película como '{usuario_actual}'? (s/n): ").strip().lower()
         if desea_comentar == 's':
-            persona = input("Introduce tu nombre para dejar un comentario de la película: ").strip()
             texto = input("Escribe tu comentario: ").strip()
-            return persona, texto
-        return None, None
+            return texto
+        return None
 
     def show_error(self, message: str):
         print(f"\n{message}")

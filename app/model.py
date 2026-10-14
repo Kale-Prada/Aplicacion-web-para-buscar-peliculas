@@ -12,6 +12,34 @@ class MovieModel:
         self.db = DatabaseConnection()
 
     
+    def autenticar_o_registrar_usuario(self, nombre_usuario: str, password: str):
+        """
+        Busca al usuario. Si existe, verifica su contraseña. 
+        Si no existe, lo registra automáticamente con esa contraseña.
+        Retorna True si la autenticación/registro es exitosa, False si la contraseña es incorrecta.
+        """
+        nombre_limpio = nombre_usuario.strip().capitalize()
+        if not nombre_limpio or not password:
+            return False
+
+        # 1. Comprobar si el usuario ya existe
+        query_select = "SELECT * FROM usuario WHERE nombre = ?"
+        resultado = self.db.ejecutar_query(query_select, (nombre_limpio,))
+
+        if resultado:
+            # El usuario existe, verificamos la contraseña
+            usuario_db = dict(resultado[0])
+            if usuario_db["password"] == password:
+                return True # Login exitoso
+            else:
+                return False # Contraseña incorrecta
+        else:
+            # El usuario no existe, lo registramos como nuevo
+            query_insert = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
+            exito = self.db.ejecutar_query(query_insert, (nombre_limpio, password))
+            return exito is not None
+    
+    
     def search_movies_by_name(self, nombre: str):
         """
         Busca películas por título o nombre de película sin importar el año.
@@ -61,8 +89,9 @@ class MovieModel:
         """
         Guarda un comentario asociado al imdb_id de la película.
         """
-        
+        #Capturo la fecha actual del sistema
         fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         query = """
             INSERT INTO comentario (id_pelicula, persona, comentario, fecha)
             VALUES (?, ?, ?, ?)

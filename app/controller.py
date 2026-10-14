@@ -9,9 +9,29 @@ class MovieController:
          #Inicializo modelo y vista
         self.model = MovieModel()
         self.view = MovieView()
+        self.usuario_actual = None
 
+
+    
     #Lógica de selección de opciones
     def run(self):
+
+        # 1. Bucle de autenticación / registro obligatorio al arrancar
+        while not self.usuario_actual:
+            nombre, password = self.view.request_user_credentials()
+                    
+            if not nombre or not password:
+                self.view.show_error("El usuario y la contraseña no pueden estar vacíos.")
+                continue
+                    
+            autenticado = self.model.autenticar_o_registrar_usuario(nombre, password)
+            if autenticado:
+                self.usuario_actual = nombre.strip().capitalize()
+                self.view.show_welcome_user(self.usuario_actual)
+            else:
+                self.view.show_error("Contraseña incorrecta para este usuario. Inténtalo de nuevo.")
+
+        #Buble principal del menú de opciones para elegir película
         while True:
             option = self.view.show_menu()
 
@@ -88,14 +108,14 @@ class MovieController:
                 self.view.show_comments(comentarios)
 
                 # 2. Pregunto si el usuario desea agregar un comentario
-                persona, texto_comentario = self.view.prompt_add_comment()
+                texto_comentario = self.view.prompt_add_comment(self.usuario_actual)
                 
                 # Si el usuario responde 'n' o no introduce datos, salimos del bucle de comentarios
-                if not persona or not texto_comentario:
+                if not texto_comentario:
                     break
 
-                # 3. Guardar el comentario deñ usuario
-                exito = self.model.guardar_comentario(imdb_id, persona, texto_comentario)
+                # 3. Guardar el comentario usando la sesión del registro de usuario
+                exito = self.model.guardar_comentario(imdb_id, self.usuario_actual, texto_comentario)
                 if exito:
                     print("\n¡Comentario guardado con éxito!")
                 else:
