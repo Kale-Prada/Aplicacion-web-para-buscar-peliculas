@@ -14,15 +14,19 @@ class MovieModel:
     
     def autenticar_o_registrar_usuario(self, nombre_usuario: str, password: str):
         """
-        Busca al usuario. Si existe, verifica su contraseña. 
+        Busca al usuario limpiando espacios múltiples y aplicando formato de título 
+        (permite nombres y apellidos correctamente). Si existe, verifica su contraseña. 
         Si no existe, lo registra automáticamente con esa contraseña.
         Retorna True si la autenticación/registro es exitosa, False si la contraseña es incorrecta.
         """
-        nombre_limpio = nombre_usuario.strip().capitalize()
+
+        # " ".join(...split()) limpia espacios dobles o extra y .title() normaliza las mayúsculas
+        nombre_limpio = " ".join(nombre_usuario.strip().split()).title()
+     
         if not nombre_limpio or not password:
             return False
 
-        # 1. Comprobar si el usuario ya existe
+        # 1. Comprobar si el usuario ya existe en la BBDD
         query_select = "SELECT * FROM usuario WHERE nombre = ?"
         resultado = self.db.ejecutar_query(query_select, (nombre_limpio,))
 
@@ -30,11 +34,11 @@ class MovieModel:
             # El usuario existe, verificamos la contraseña
             usuario_db = dict(resultado[0])
             if usuario_db["password"] == password:
-                return True # Login exitoso
+                return True # Contraseña correcta
             else:
                 return False # Contraseña incorrecta
         else:
-            # El usuario no existe, lo registramos como nuevo
+            # El usuario no existe, lo registro como nuevo
             query_insert = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
             exito = self.db.ejecutar_query(query_insert, (nombre_limpio, password))
             return exito is not None
