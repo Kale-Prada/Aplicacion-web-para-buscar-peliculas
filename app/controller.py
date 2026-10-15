@@ -18,11 +18,15 @@ class MovieController:
         # Bucle de autenticación / registro obligatorio al arrancar
         while not self.usuario_actual:
             nombre, password = self.view.request_user_credentials()
-                    
+
+            #Validación de campos vacíos        
             if not nombre or not password:
                 self.view.show_error("El usuario y la contraseña no pueden estar vacíos.")
                 continue
-                    
+
+            # Normalización del nombre/login: Uso de .strip() para limpiar espacios a los lados, .split() para 
+            # eliminar espacios múltiples intermedios (como nombres con varios espacios entre palabras) 
+            # y .title() para conservar el formato correcto.        
             nombre_limpio = " ".join(nombre.strip().split()).title()
             usuario_db = self.model.buscar_usuario(nombre_limpio)
             
