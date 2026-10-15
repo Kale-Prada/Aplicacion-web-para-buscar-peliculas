@@ -25,6 +25,30 @@ class DatabaseConnection:
         return conexion
 
 
+    def fetch_one(self, sql_query, parametro=None):
+        """
+        Ejecuta una consulta SELECT y devuelve una sola fila o None.
+        """
+        if parametro is None:
+            parametro = []
+            
+        con = self._get_connection()
+        cur = con.cursor()
+        
+        try:
+            cur.execute(sql_query, parametro)
+            # .fetchone() trae un único registro
+            resultado = cur.fetchone()
+            return resultado
+
+        except Exception as e:
+            print(f"Error en fetch_one: {e}")
+            return None
+            
+        finally:
+            con.close()
+    
+    
     def fetch_query(self, sql_query, parametro=None):
         """
         Función exclusiva para leer o consultar datos (SELECT). 
@@ -99,9 +123,10 @@ class DatabaseConnection:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_pelicula TEXT NOT NULL,
                 id_usuario INTEGER NOT NULL,
-                persona TEXT NOT NULL,
-                comentario TEXT,
-                fecha TEXT NOT NULL
+                -- persona TEXT NOT NULL - Sustituido por la clave foránea id_usuario de la tabla 'usuario'
+                comentario TEXT NOT NULL,
+                fecha TEXT NOT NULL,
+                FOREIGN KEY (id_usuario) REFERENCES usuario (id)
             )
         """
         self.execute_query(query_tabla_comentario)
@@ -112,7 +137,8 @@ class DatabaseConnection:
         query_tabla_usuario = """
             CREATE TABLE IF NOT EXISTS usuario (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT UNIQUE NOT NULL,
+                username TEXT UNIQUE NOT NULL,     -- Identificador único para el login (ej. 'lucas1980')
+                nombre_a_mostrar TEXT NOT NULL,     -- Nombre visible en los comentarios (ej. 'Lucas Prada', admite espacios y símbolos)
                 password TEXT NOT NULL
             )
         """

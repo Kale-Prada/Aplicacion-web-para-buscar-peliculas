@@ -12,20 +12,14 @@ class MovieModel:
         self.db = DatabaseConnection()
 
 
-    def buscar_usuario(self, nombre_usuario: str):
+    def buscar_usuario(self, username: str):
         """
         Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
         de no tenerlos, hay que registrarse y así poder comentar las películas.  
-        Esta función retorna los datos del usuario, si existen.
+        Esta función busca el usuario por su 'username' único.
         
         """
-        nombre_login = " ".join(nombre_usuario.strip().split()).title()
-        #Comprobar si el usuario ya existe en la BBDD
-        query = "SELECT * FROM usuario WHERE nombre = ?"
-        resultado = self.db.fetch_query(query, (nombre_login,))
-        if resultado:
-            return dict(resultado[0])
-        return None
+        return self.buscar_usuario_por_username(username)
 
     
     def verificar_password(self, nombre_usuario: str, password: str) -> bool:
@@ -33,24 +27,39 @@ class MovieModel:
         Función que verifica si la contraseña introducida coincide con la del usuario registrado en la BBDD,
         en el caso que exista el usuario (previa comprobación).
         """
-        verificar_pw = self.buscar_usuario(nombre_usuario)
-        if verificar_pw and verificar_pw["password"] == password:
+        usuario_db = self.buscar_usuario_por_username(nombre_usuario)
+        if usuario_db and usuario_db["password"] == password:
             return True
         return False
 
     
-    def registrar_usuario(self, nombre_usuario: str, password: str):
+    def registrar_usuario(self, username: str, nombre_a_mostrar: str, password: str):
         """
-        Registra un nuevo usuario en la base de datos.
+        Registra un nuevo usuario en la base de datos asegurando un username único y un nombre visible.
         Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
         de no tenerlos, hay que registrarse y así poder comentar las películas. 
         """
-        registrar_usuario_db = " ".join(nombre_usuario.strip().split()).title()
+        try:
+            query = """
+                INSERT INTO usuario (username, nombre_a_mostrar, password)
+                VALUES (?, ?, ?)
+            """
+            # Normalizamos el username a minúsculas y sin espacios para evitar colisiones
+            self.db.execute_query(query, (username.strip().lower(), nombre_a_mostrar.strip(), password))
+            return True
+        except Exception as e:
+            print(f"Error al registrar usuario: {e}")
+            return False
 
-        # Después de verificar si el usuario existe o no: si el usuario no existe, lo registro como nuevo
-        query = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
-        exito = self.db.execute_query(query, (registrar_usuario_db, password))
-        return exito is not None
+
+    def buscar_usuario_por_username(self, username: str):
+        """Busca al usuario estrictamente por su username de login."""
+        try:
+            query = "SELECT id, username, nombre_a_mostrar, password FROM usuario WHERE username = ?"
+            return self.db.fetch_one(query, (username.strip().lower(),))
+        except Exception as e:
+            print(f"Error al buscar usuario: {e}")
+            return None
     
     
     def search_movies_by_name(self, nombre: str):
@@ -100,36 +109,49 @@ class MovieModel:
             return None
 
 
-    def guardar_comentario(self, id_pelicula: str, persona: str, texto_comentario: str):
+    def guardar_comentario(self, id_pelicula: str, id_usuario: str, texto_comentario: str):
         """
         Guarda un comentario asociado al imdb_id de la película.
         """
-        #Capturo la fecha actual del sistema
-        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            #Capturo la fecha actual del sistema
+            #fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        query = """
-            INSERT INTO comentario (id_pelicula, persona, comentario, fecha)
-            VALUES (?, ?, ?, ?)
-        """
-        resultado = self.db.execute_query(query, (id_pelicula, persona, texto_comentario, fecha_actual))
-        return resultado is not None
-
+            query = """
+                INSERT INTO comentario (id_pelicula, id_usuario, comentario, fecha)
+                VALUES (?, ?, ?, datetime('now'))
+            """
+        
+            # Uso fetch_query o execute_query según la clase de conexión
+            self.db.execute_query(query, (id_pelicula, id_usuario, texto_comentario))
+            return True
+        except Exception as e:
+            print(f"Error al guardar el comentario: {e}")
+            return False
     
+
+
     def obtener_comentarios(self, id_pelicula: str):
         """
-        Recupera los comentarios de todos los usuarios, 
-        asociados a una película por su imdb_id. 
-        Muestra fecha, nombre de la persona y comentario. 
+        Obtiene los comentarios de una película haciendo un JOIN con la tabla usuario 
+        para devolver el nombre del usuario junto al texto del comentario y su fecha.
         """
-        
-        #Se ordena en forma DESC - Descendente. Del más nuevo al más antiguo. 
-        query = """
-            SELECT persona, comentario, fecha 
-            FROM comentario 
-            WHERE id_pelicula = ? 
-            ORDER BY id DESC
-        """
-
-        
-        resultados = self.db.fetch_query(query, (id_pelicula,))
-        return resultados if resultados is not None else []
+        try:
+            query = """
+                SELECT 
+                    c.id,             -- ID único del comentario de la tabla 'comentario'(c)
+                    c.id_pelicula,    -- ID de la película en OMDb API (c)
+                    c.comentario,     -- El texto escrito por el usuario en la tabla 'comentario'(c)
+                    c.fecha,          -- Fecha y hora en que se creó el comentario, se usa 'datetime' en la tabla 'comentario' (c)
+                    u.nombre_a_mostrar as persona, -- Nombre del usuario en la tabla 'usuario' (u), renombrado como 'persona' para el Front-end
+                    u.id as id_table_usuario   -- ID único del usuario (u), guardado como 'id_table_usuario'
+                FROM comentario c       -- Declaro la tabla 'comentario' y le asignamos el alias 'c'
+                JOIN usuario u ON c.id_usuario = u.id  -- Vincula ambas tablas donde el 'id_usuario' del comentario coincida con el 'id' del usuario
+                WHERE c.id_pelicula = ?                -- Filtra solo los comentarios de esta película específica
+                ORDER BY c.id DESC;                    -- Los ordena del más reciente al más antiguo
+            """   
+            
+            return self.db.fetch_query(query, (id_pelicula,))
+        except Exception as e:
+            print(f"Error al obtener comentarios: {e}")
+            return []

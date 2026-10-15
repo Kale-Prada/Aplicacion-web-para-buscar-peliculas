@@ -1,44 +1,52 @@
 #Comentarios sobre las peliculas asegurándose que el usuario está registrado
 
-from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
 from app.model import MovieModel
 
 router = APIRouter(prefix="/api/comentarios", tags=["Comentarios"])
 movie_model = MovieModel()
 
 class ComentarioRequest(BaseModel):
-    persona: str
+    username: str       # Cambiamos 'persona' por 'username' para el login técnico
     comentario: str
-
-@router.get("/{imdb_id}")
-def obtener_comentarios(imdb_id: str):
-    """Retorna la lista de comentarios asociados a una película."""
-    comentarios = movie_model.obtener_comentarios(imdb_id)
-    return [dict(row) for row in comentarios]
-
 
 @router.post("/{imdb_id}")
 def agregar_comentario(imdb_id: str, data: ComentarioRequest):
-    """Guarda un nuevo comentario validando estrictamente que el usuario esté registrado."""
+    """
+    Guarda un nuevo comentario validando estrictamente que el usuario 
+    exista en la BBDD a través de su 'username' único.
+    """
     if not data.comentario.strip():
         raise HTTPException(status_code=400, detail="El texto del comentario no puede estar vacío.")
 
-    nombre_usuario_limpio = " ".join(data.persona.strip().split()).title()
-    usuario_existente = movie_model.buscar_usuario(nombre_usuario_limpio)
+    if not data.username.strip():
+        raise HTTPException(status_code=400, detail="El identificador de usuario (username) es obligatorio.")
+
+    # Normalizamos el username a minúsculas y sin espacios (como se guarda al registrar)
+    username_limpio = data.username.strip().lower()
+
+    # Buscamos al usuario en la base de datos por su username único
+    usuario_db = movie_model.buscar_usuario_por_username(username_limpio)
     
-    if not usuario_existente:
+    if not usuario_db:
         raise HTTPException(
             status_code=403, 
-            detail=f"Acceso denegado: El usuario '{nombre_usuario_limpio}' no está registrado. Es obligatorio iniciar sesión para comentar."
+            detail=f"Acceso denegado: El usuario con username '{username_limpio}' no está registrado."
         )
 
-    exito = movie_model.guardar_comentario(imdb_id, nombre_usuario_limpio, data.comentario)
+    # Extraemos el ID y el nombre visible de la base de datos
+    usuario_id = usuario_db["id"] if isinstance(usuario_db, dict) else usuario_db[0]
+    nombre_a_mostrar = usuario_db["nombre_a_mostrar"] if isinstance(usuario_db, dict) else usuario_db[2]
+
+    # Guardamos asociando el id_usuario
+    exito = movie_model.guardar_comentario(imdb_id, usuario_id, data.comentario)
+    
     if exito:
         return {
             "status": "success", 
             "mensaje": "Comentario guardado correctamente.", 
-            "usuario": nombre_usuario_limpio
+            "usuario": nombre_a_mostrar  # Devolvemos el nombre visible para que la interfaz lo muestre bonito
         }
     else:
-        raise HTTPException(status_code=500, detail="Error interno al intentar guardar el comentario en la base de datos.")
+        raise HTTPException(status_code=500, detail="Error interno al guardar el comentario.")

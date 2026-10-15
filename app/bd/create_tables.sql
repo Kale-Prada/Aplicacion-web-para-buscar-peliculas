@@ -4,16 +4,17 @@ CREATE TABLE "comentario" (
 	"id"	INTEGER,
 	"id_pelicula"	TEXT NOT NULL,
 	"id_usuario"	INTEGER NOT NULL,
-	"persona"	TEXT NOT NULL,
-	"comentario"	TEXT,
+	"comentario"	TEXT NOT NULL,
 	"fecha"	TEXT NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT)
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("id_usuario") REFERENCES "usuario"("id")
 );
 
 
 CREATE TABLE "usuario" (
 	"id"	INTEGER,
-	"nombre"	TEXT NOT NULL UNIQUE,
+	"username"	TEXT NOT NULL UNIQUE,
+	"nombre_a_mostrar"	TEXT NOT NULL,
 	"password"	TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
