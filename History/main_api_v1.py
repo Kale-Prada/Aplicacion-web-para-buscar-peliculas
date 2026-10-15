@@ -6,6 +6,16 @@
 from fastapi import FastAPI
 from app.model import MovieModel
 
+
+
+
+
+
+
+
+
+
+
 # Inicializamos la aplicación de FastAPI
 app = FastAPI(
     title="API de Búsqueda de Películas",

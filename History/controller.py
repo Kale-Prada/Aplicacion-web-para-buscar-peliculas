@@ -2,7 +2,7 @@
 # Incluye la visualización de los comentarios guardados a través del ID "imdb_id"
 
 from app.model import MovieModel
-from app.view import MovieView
+from History.view import MovieView
 
 class MovieController:
     def __init__(self):
@@ -19,7 +19,7 @@ class MovieController:
         while not self.usuario_actual:
             nombre, password = self.view.request_user_credentials()
 
-            #Validación de campos vacíos        
+            #Validación de campos        
             if not nombre or not password:
                 self.view.show_error("El usuario y la contraseña no pueden estar vacíos.")
                 continue
