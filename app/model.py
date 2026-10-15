@@ -22,7 +22,7 @@ class MovieModel:
         nombre_login = " ".join(nombre_usuario.strip().split()).title()
         #Comprobar si el usuario ya existe en la BBDD
         query = "SELECT * FROM usuario WHERE nombre = ?"
-        resultado = self.db.ejecutar_query(query, (nombre_login,))
+        resultado = self.db.fetch_query(query, (nombre_login,))
         if resultado:
             return dict(resultado[0])
         return None
@@ -33,8 +33,8 @@ class MovieModel:
         Función que verifica si la contraseña introducida coincide con la del usuario registrado en la BBDD,
         en el caso que exista el usuario (previa comprobación).
         """
-        usuario_db = self.buscar_usuario(nombre_usuario)
-        if usuario_db and usuario_db["password"] == password:
+        verificar_pw = self.buscar_usuario(nombre_usuario)
+        if verificar_pw and verificar_pw["password"] == password:
             return True
         return False
 
@@ -45,11 +45,11 @@ class MovieModel:
         Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
         de no tenerlos, hay que registrarse y así poder comentar las películas. 
         """
-        nombre_limpio = " ".join(nombre_usuario.strip().split()).title()
+        registrar_usuario_db = " ".join(nombre_usuario.strip().split()).title()
 
         # Después de verificar si el usuario existe o no: si el usuario no existe, lo registro como nuevo
         query = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
-        exito = self.db.ejecutar_query(query, (nombre_limpio, password))
+        exito = self.db.execute_query(query, (registrar_usuario_db, password))
         return exito is not None
     
     
@@ -111,7 +111,7 @@ class MovieModel:
             INSERT INTO comentario (id_pelicula, persona, comentario, fecha)
             VALUES (?, ?, ?, ?)
         """
-        resultado = self.db.ejecutar_query(query, (id_pelicula, persona, texto_comentario, fecha_actual))
+        resultado = self.db.execute_query(query, (id_pelicula, persona, texto_comentario, fecha_actual))
         return resultado is not None
 
     
@@ -131,5 +131,5 @@ class MovieModel:
         """
 
         
-        resultados = self.db.ejecutar_query(query, (id_pelicula,))
+        resultados = self.db.fetch_query(query, (id_pelicula,))
         return resultados if resultados is not None else []
