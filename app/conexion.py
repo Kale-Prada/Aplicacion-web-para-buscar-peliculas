@@ -98,6 +98,7 @@ class DatabaseConnection:
             CREATE TABLE IF NOT EXISTS comentario (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_pelicula TEXT NOT NULL,
+                id_usuario INTEGER NOT NULL,
                 persona TEXT NOT NULL,
                 comentario TEXT,
                 fecha TEXT NOT NULL
@@ -106,7 +107,7 @@ class DatabaseConnection:
         self.execute_query(query_tabla_comentario)
 
         #Creo la tabla 'usuario' para la autenticación e ingreso a la búsqueda de películas y poder dejar comentarios. 
-        #Ya no les volverá a pedir el usuario o nombre cuando vayana introducir un comentario. 
+        #Ya no les volverá a pedir el usuario o nombre cuando vayan a introducir un comentario. 
 
         query_tabla_usuario = """
             CREATE TABLE IF NOT EXISTS usuario (

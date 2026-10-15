@@ -1,4 +1,4 @@
-# Proyecto final Bootcamp Aprender a programar desde cero XXVI: Aplicación web para buscar películas por nombre y año en que se llevó a la gran pantalla
+# Proyecto final Bootcamp Aprender a programar desde cero XXVI: Aplicación web para buscar películas por nombre y año
 
 
 ## ¿Qué debe hacer mi programa?

@@ -3,6 +3,7 @@
 CREATE TABLE "comentario" (
 	"id"	INTEGER,
 	"id_pelicula"	TEXT NOT NULL,
+	"id_usuario"	INTEGER NOT NULL,
 	"persona"	TEXT NOT NULL,
 	"comentario"	TEXT,
 	"fecha"	TEXT NOT NULL,
