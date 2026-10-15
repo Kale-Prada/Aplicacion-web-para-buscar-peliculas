@@ -11,12 +11,11 @@ class MovieController:
         self.view = MovieView()
         self.usuario_actual = None
 
-
     
     #Lógica de selección de opciones
     def run(self):
 
-        # 1. Bucle de autenticación / registro obligatorio al arrancar
+        # Bucle de autenticación / registro obligatorio al arrancar
         while not self.usuario_actual:
             nombre, password = self.view.request_user_credentials()
                     
@@ -24,14 +23,34 @@ class MovieController:
                 self.view.show_error("El usuario y la contraseña no pueden estar vacíos.")
                 continue
                     
-            autenticado = self.model.autenticar_o_registrar_usuario(nombre, password)
-            if autenticado:
-                self.usuario_actual = nombre.strip().capitalize()
-                self.view.show_welcome_user(self.usuario_actual)
+            nombre_limpio = " ".join(nombre.strip().split()).title()
+            usuario_db = self.model.buscar_usuario(nombre_limpio)
+            
+            if usuario_db:
+                # El usuario existe: llamo a la función dedicada a comprobar la contraseña
+                if self.model.verificar_password(nombre_limpio, password):
+                    self.usuario_actual = nombre_limpio
+                    self.view.show_welcome_user(self.usuario_actual)
+                else:
+                    self.view.show_error("Contraseña incorrecta. Inténtalo de nuevo.")
             else:
-                self.view.show_error("Contraseña incorrecta para este usuario. Inténtalo de nuevo.")
+                # El usuario NO existe: le pregunto si desea crearlo
+                desea_crear = self.view.prompt_crear_usuario(nombre_limpio)
+                if desea_crear:
+                    exito = self.model.registrar_usuario(nombre_limpio, password)
+                    if exito:
+                        self.usuario_actual = nombre_limpio
+                        self.view.show_welcome_user(self.usuario_actual)
+                    else:
+                        self.view.show_error("Hubo un error al registrar el usuario en la base de datos.")
+                else:
+                    self.view.show_error("No es posible acceder. Es necesario iniciar sesión para buscar películas y comentarlas.")
+                    self.view.show_goodbye()
+                    exit()
 
-        #Buble principal del menú de opciones para elegir película
+
+        
+        # Bucle principal del menú de opciones para elegir película
         while True:
             option = self.view.show_menu()
 
@@ -47,7 +66,7 @@ class MovieController:
                 except Exception:
                     self.view.show_error("Ocurrió un error inesperado al procesar la solicitud.")
 
-            #Opción 2: Buscar por nombre y año de la película
+            # Opción 2: Buscar por nombre y año de la película
             elif option == "2":
                 name_movie = self.view.request_movie_name()
                 #Si pulsa enter sin introducir datos, se comprueba. 
@@ -62,13 +81,14 @@ class MovieController:
                 except Exception:
                     self.view.show_error("Ocurrió un error inesperado al procesar la solicitud.")
 
-            #Opción 3: Salir del programa. 
+            # Opción 3: Salir del programa. 
             elif option == "3":
                 self.view.show_goodbye()
                 break
             else:
                 self.view.show_error("Opción incorrecta. Seleccione 1, 2 o 3.")
 
+    
     def _process_movie_selection(self, api_response: dict):
         if not api_response or api_response.get("Response") == "False":
             self.view.show_error("No se encontraron películas que coincidan con los criterios.")
@@ -100,8 +120,11 @@ class MovieController:
             self.view.show_error("No se pudo recuperar la información detallada de la película.")
         else:
             self.view.show_movie_info(movie_detail)
+
+
             
             # --- GESTIÓN DE COMENTARIOS CON BUCLE ---
+
             while True:
                 # 1. Obtengo y muestro los comentarios actuales desde SQLite
                 comentarios = self.model.obtener_comentarios(imdb_id)

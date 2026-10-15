@@ -8,19 +8,28 @@ class MovieView:
         """
         Solicita el nombre de usuario y contraseña (si no existe, se registrará).
         """
-        print("\n==============================================")
-        print("          ACCESO / REGISTRO DE USUARIO        ")
-        print("================================================")
-        print("💡 Nota: Si el usuario no existe, se creará automáticamente.")
+        print("\n========================================================")
+        print("          BÚSQUEDA DE PELÍCULAS EN OMBd API        ")
+        print("             ACCESO / REGISTRO DE USUARIO        ")
+        print("========================================================")
+        print("Nota: para buscar una película accede con tu usuario y contraseña.")
+        print("Si el usuario que has introducido no existe, se creará automáticamente.")
         nombre = input("Introduce tu nombre de usuario: ").strip()
         password = input("Introduce tu contraseña: ").strip()
         return nombre, password
 
+    
     def show_welcome_user(self, nombre_usuario: str):
+        """
+        Imprime el mensaje de bienvenida, sesión iniciada correctamente. 
+        """
         print(f"\n¡Bienvenido/a, {nombre_usuario}! Sesión iniciada correctamente.")
         
+    
     def show_menu(self):
-        """Muestra el menú principal con opciones."""
+        """
+        Muestra el menú principal de búsqueda de películas con tres opciones.
+        """
         print("\n==============================================")
         print("        BUSCADOR DE PELÍCULAS EN OMDB API       ")
         print("================================================")
@@ -30,10 +39,18 @@ class MovieView:
         print("=================================================")
         return input("Seleccione una opción: ").strip()
 
+    
     def request_movie_name(self):
+        """
+        Función que solicita hacer un INPUT del nombre de la película que se está buscando
+        """
         return input("\nIntroduce el nombre de la película que estás buscando: ").strip()
 
+    
     def request_year(self):
+        """
+        Función que pregunta el año de la película a buscar
+        """
         actual_year = datetime.now().year
         while True:
             entrada = input("\nIntroduce el año que deseas buscar: ").strip()
@@ -53,7 +70,13 @@ class MovieView:
     # para controlar sus recursos y ancho de banda. 
     # Así que muestro el total de resultados posibles con la búsqueda realizada con "total_result"
     
+    
     def show_movies_list(self, movies_list: list, total_results: str):
+        """
+        Muestra el resultado total de las películas encontradas consumiendo la API de OMBd 
+        y lista en pantalla, como máximo, las primeras 10 disponibles. 
+        OMBd API no permite paginar más de 10 para ahorrar en recursos. 
+        """
         print("\n=============================================")
         print(f" ¡GENIAL! Se han encontrado {total_results} resultados en total.")
         print(" Mostrando las 10 primeras coincidencias (si existiesen):")
@@ -65,7 +88,12 @@ class MovieView:
             print(f"{indice} - {titulo} ({anio}) [{tipo}]")
         print("=============================================")
 
+    
     def select_movie_from_list(self, total_movies: int):
+        """
+        Función para controlar la elección de la película encontrada en base a la búsqueda del usuario. 
+        Controla si el usuario ha elegido película o ha pulsado enter sin introducir una elección. 
+        """
         while True:
 
             entrada = input("\nSelecciona el número de la película para ver su detalle (o escribe 'salir' para volver al menú principal): ").strip()
@@ -92,9 +120,11 @@ class MovieView:
             
             return opcion - 1
     
+    
     def show_movie_info(self, movie_data: dict):
         """
-        Muestra la información detalla de la película elegida por el usuario. 
+        Muestra la información detalla de la película elegida por el usuario
+        y que obtengo consumiendo la API de OMBd API. 
         """
         print("\n===================================")
         print("     INFORMACIÓN DE LA PELÍCULA     ")
@@ -122,6 +152,7 @@ class MovieView:
         print(f"Production: {movie_data.get('Production', 'N/A')}")
         print(f"Website: {movie_data.get('Website', 'N/A')}")
 
+    
     def show_comments(self, comentarios: list):
         """
         Muestra la lista de comentarios formateados desde las filas del SQLite.
@@ -151,8 +182,27 @@ class MovieView:
             return texto
         return None
 
+
+    def prompt_crear_usuario(self, usuario_actual: str):
+        """
+        Pregunta si se desea crear el usuario introducido (porque no existe en la BBDD)
+        para iniciar sesión.
+        """
+        desea_crear_usuario = input(f"\n¿Deseas crear el usuario: '{usuario_actual}' para acceder a la búsqueda de películas y comentarlas? (s/n): ").strip().lower()
+        # Devuelve True si es 's', y False si es 'n' o cualquier otra cosa que haya introducido el usuario.
+        return desea_crear_usuario == 's'
+
+    
     def show_error(self, message: str):
+        """
+        Muestra mensaje de error en el caso que el login del usuario no sea válido
+        """
         print(f"\n{message}")
 
+    
     def show_goodbye(self):
+        """
+        Muestra en pantalla el mensaje de fin de búsqueda cuando se ha elegido en el ménú 
+        de búsqueda de películas la opción 3 para salir. 
+        """
         print("\nFin de la búsqueda de películas. ¡Chao!\n")

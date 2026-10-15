@@ -11,37 +11,46 @@ class MovieModel:
         self.base_url = "http://www.omdbapi.com"
         self.db = DatabaseConnection()
 
-    
-    def autenticar_o_registrar_usuario(self, nombre_usuario: str, password: str):
+
+    def buscar_usuario(self, nombre_usuario: str):
         """
-        Busca al usuario limpiando espacios múltiples y aplicando formato de título 
-        (permite nombres y apellidos correctamente). Si existe, verifica su contraseña. 
-        Si no existe, lo registra automáticamente con esa contraseña.
-        Retorna True si la autenticación/registro es exitosa, False si la contraseña es incorrecta.
+        Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
+        de no tenerlos, hay que registrarse y así poder comentar las películas.  
+        Esta función retorna los datos del usuario, si existen.
+        
         """
-
-        # " ".join(...split()) limpia espacios dobles o extra y .title() normaliza las mayúsculas
-        nombre_limpio = " ".join(nombre_usuario.strip().split()).title()
-     
-        if not nombre_limpio or not password:
-            return False
-
-        # 1. Comprobar si el usuario ya existe en la BBDD
-        query_select = "SELECT * FROM usuario WHERE nombre = ?"
-        resultado = self.db.ejecutar_query(query_select, (nombre_limpio,))
-
+        nombre_login = " ".join(nombre_usuario.strip().split()).title()
+        #Comprobar si el usuario ya existe en la BBDD
+        query = "SELECT * FROM usuario WHERE nombre = ?"
+        resultado = self.db.ejecutar_query(query, (nombre_login,))
         if resultado:
-            # El usuario existe, verificamos la contraseña
-            usuario_db = dict(resultado[0])
-            if usuario_db["password"] == password:
-                return True # Contraseña correcta
-            else:
-                return False # Contraseña incorrecta
-        else:
-            # El usuario no existe, lo registro como nuevo
-            query_insert = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
-            exito = self.db.ejecutar_query(query_insert, (nombre_limpio, password))
-            return exito is not None
+            return dict(resultado[0])
+        return None
+
+    
+    def verificar_password(self, nombre_usuario: str, password: str) -> bool:
+        """
+        Función que verifica si la contraseña introducida coincide con la del usuario registrado en la BBDD,
+        en el caso que exista el usuario (previa comprobación).
+        """
+        usuario_db = self.buscar_usuario(nombre_usuario)
+        if usuario_db and usuario_db["password"] == password:
+            return True
+        return False
+
+    
+    def registrar_usuario(self, nombre_usuario: str, password: str):
+        """
+        Registra un nuevo usuario en la base de datos.
+        Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
+        de no tenerlos, hay que registrarse y así poder comentar las películas. 
+        """
+        nombre_limpio = " ".join(nombre_usuario.strip().split()).title()
+
+        # Después de verificar si el usuario existe o no: si el usuario no existe, lo registro como nuevo
+        query = "INSERT INTO usuario (nombre, password) VALUES (?, ?)"
+        exito = self.db.ejecutar_query(query, (nombre_limpio, password))
+        return exito is not None
     
     
     def search_movies_by_name(self, nombre: str):
@@ -59,6 +68,7 @@ class MovieModel:
         except Exception:
             return {}
 
+    
     def search_movies_by_name_and_year(self, nombre: str, year_string: str):
         """
         Busca películas combinando un título y un año específicos.
@@ -74,6 +84,7 @@ class MovieModel:
         except Exception:
             return {}
 
+    
     def fetch_movie_detail(self, imdb_id: str):
         """
         Obtiene la información detallada de una película mediante su ID único (IMDb ID)
@@ -103,11 +114,12 @@ class MovieModel:
         resultado = self.db.ejecutar_query(query, (id_pelicula, persona, texto_comentario, fecha_actual))
         return resultado is not None
 
+    
     def obtener_comentarios(self, id_pelicula: str):
         """
-        Recupera los comentarios de todos los usuarios que hayan dejado comentario, 
-        asociados a una película por su imdb_id. Muestra fecha, nombre de la persona 
-        y el o los comentarios. 
+        Recupera los comentarios de todos los usuarios, 
+        asociados a una película por su imdb_id. 
+        Muestra fecha, nombre de la persona y comentario. 
         """
         
         #Se ordena en forma DESC - Descendente. Del más nuevo al más antiguo. 
