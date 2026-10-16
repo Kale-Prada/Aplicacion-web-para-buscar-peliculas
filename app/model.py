@@ -116,14 +116,15 @@ class MovieModel:
         try:
             #Capturo la fecha actual del sistema
             #fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            fecha_actual = datetime.now().strftime("%d/%m/%Y  %H:%M:%S")
 
             query = """
                 INSERT INTO comentario (id_pelicula, id_usuario, comentario, fecha)
-                VALUES (?, ?, ?, datetime('now'))
+                VALUES (?, ?, ?, ?)
             """
         
             # Uso fetch_query o execute_query según la clase de conexión
-            self.db.execute_query(query, (id_pelicula, id_usuario, texto_comentario))
+            self.db.execute_query(query, (id_pelicula, id_usuario, texto_comentario, fecha_actual))
             return True
         except Exception as e:
             print(f"Error al guardar el comentario: {e}")
