@@ -188,7 +188,7 @@ async function buscarPeliculasPorTitulo() {
     try {
         const response = await fetch(`${API_URL}/peliculas/buscar?titulo=${encodeURIComponent(query)}`);
         const data = await response.json();
-        renderizarResultados(data);
+        renderizarResultados(data, "titulo");
     } catch (error) {
         console.error("Error al buscar películas:", error);
         alert("Hubo un error al realizar la búsqueda.");
@@ -208,19 +208,35 @@ async function buscarPeliculasPorTituloYAnio() {
         // Conectamos con tu endpoint existente: /api/peliculas/buscar-por-anio?titulo=...&year=...
         const response = await fetch(`${API_URL}/peliculas/buscar-por-anio?titulo=${encodeURIComponent(titulo)}&year=${encodeURIComponent(year)}`);
         const data = await response.json();
-        renderizarResultados(data);
+        renderizarResultados(data, "titulo");
     } catch (error) {
         console.error("Error al buscar por título y año:", error);
         alert("No se encontraron películas con esos criterios o hubo un error en la red.");
     }
 }
 
-// Función auxiliar para pintar las tarjetas de películas de forma limpia (DRY)
-function renderizarResultados(data) {
+// Función auxiliar unificada para pintar las tarjetas de películas y mostrar el contador de OMDb
+function renderizarResultados(data, tipoBusqueda = "título") {
     const moviesGrid = document.getElementById("movies-grid");
+    const counterContainer = document.getElementById("search-counter-container");
+    const counterText = document.getElementById("search-counter-text");
+    
     moviesGrid.innerHTML = "";
 
     if (data.Search && Array.isArray(data.Search)) {
+        // OMDb devuelve el total de resultados globales en data.totalResults
+        const totalResultados = data.totalResults || data.Search.length;
+        
+        // Mostramos el contenedor con el mensaje personalizado según la búsqueda
+        if (counterContainer && counterText) {
+            counterContainer.classList.remove("d-none");
+            if (tipoBusqueda === "titulo-anio") {
+                counterText.innerHTML = `¡Genial! Se han encontrado <strong>${totalResultados}</strong> resultados en total con el filtro de búsqueda aplicado. Mostrando las 10 primeras coincidencias.`;
+            } else {
+                counterText.innerHTML = `¡Genial! Se han encontrado <strong>${totalResultados}</strong> resultados en total en OMDb API. Mostrando las 10 primeras coincidencias.`;
+            }
+        }
+
         data.Search.forEach(pelicula => {
             const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
             
@@ -238,6 +254,8 @@ function renderizarResultados(data) {
             moviesGrid.appendChild(col);
         });
     } else {
+        // Si no hay resultados, ocultamos el contador y mostramos el aviso de que no hay coincidencias
+        if (counterContainer) counterContainer.classList.add("d-none");
         moviesGrid.innerHTML = `<div class="col-12 text-center"><p class="text-muted">No se encontraron películas que coincidan con los criterios de búsqueda.</p></div>`;
     }
 }
@@ -391,6 +409,9 @@ function volverAResultados() {
     document.getElementById("search-section").classList.remove("d-none");
     document.getElementById("movies-grid").classList.remove("d-none");
     currentImdbId = null;
+
+    // Limpiar el contador del total de películas encontradas en OMDb API
+    // document.getElementById("search-counter-container").classList.add("d-none");
 }
 
 // Vuelve al inicio absoluto: limpia campos de búsqueda y vacía la rejilla
@@ -400,8 +421,9 @@ function volverInicio() {
     document.getElementById("search-section").classList.remove("d-none");
     document.getElementById("movies-grid").classList.remove("d-none");
     
-    // 2. Limpiar la rejilla de resultados de películas
+    // 2. Limpiar la rejilla de resultados de películas y del contador del total de películas encontradas en OMDb API
     document.getElementById("movies-grid").innerHTML = "";
+    document.getElementById("search-counter-container").classList.add("d-none");
 
     // 3. Limpiar los inputs de búsqueda de ambas pestañas
     const inputTitulo = document.getElementById("input-buscar-titulo");
