@@ -2,72 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Meta viewport obligatorio para diseño responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Películas - MovieSearch</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-light d-flex flex-column min-vh-100">
 
-    <!-- NAVBAR / AUTENTICACIÓN -->
+    <!-- NAVBAR / AUTENTICACIÓN RESPONSIVE -->
     <nav class="navbar navbar-dark bg-dark shadow-sm mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#" onclick="volverInicio()">🎬 MovieSearch App</a>
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-truncate" href="#" onclick="volverInicio()">🎬 MovieSearch</a>
             
             <div id="auth-container" class="d-flex align-items-center">
                 <!-- Se mostrará el formulario de login/registro o el saludo de usuario según el estado -->
                 <div id="logged-out-section" class="d-flex gap-2">
-                    <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar Sesión</button>
-                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#registroModal">Registrarse</button>
+                    <button class="btn btn-outline-light btn-sm px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Entrar</button>
+                    <button class="btn btn-warning btn-sm px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#registroModal">Registro</button>
                 </div>
-                <div id="logged-in-section" class="d-none text-white d-flex align-items-center gap-3">
-                    <span>Hola, <strong id="user-display-name"></strong></span>
-                    <button class="btn btn-outline-danger btn-sm" onclick="cerrarSesion()">Cerrar Sesión</button>
+                <div id="logged-in-section" class="d-none text-white d-flex align-items-center gap-2">
+                    <span class="small d-none d-sm-inline">Hola, <strong id="user-display-name"></strong></span>
+                    <button class="btn btn-outline-danger btn-sm" onclick="cerrarSesion()">Salir</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <div class="container">
+    <!-- CONTENEDOR PRINCIPAL FLUIDO -->
+    <div class="container my-3 flex-grow-1">
         
-        <!-- SECCIÓN DE BÚSQUEDA -->
+        <!-- SECCIÓN DE BÚSQUEDA ADAPTABLE -->
         <div id="search-section" class="row justify-content-center mb-5">
-            <div class="col-md-8 text-center">
-                <h1 class="mb-3">Encuentra tu película favorita</h1>
-                <p class="text-muted">Busca por título o afina tu búsqueda combinando título y año.</p>
+            <div class="col-12 col-md-10 col-lg-8 text-center px-3">
+                <h1 class="display-5 fw-bold mb-3">Encuentra tu película</h1>
+                <p class="text-muted mb-4">Busca rápidamente por título o afina tu búsqueda combinando año y título.</p>
                 
-                <!-- Pestañas o selector de tipo de búsqueda -->
+                <!-- Pestañas de tipo de búsqueda -->
                 <ul class="nav nav-pills justify-content-center mb-3" id="searchTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-titulo" data-bs-toggle="pill" data-bs-target="#content-titulo" type="button" role="tab">Solo por Título</button>
+                        <button class="nav-link active btn-sm" id="tab-titulo" data-bs-toggle="pill" data-bs-target="#content-titulo" type="button" role="tab">Solo Título</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-anio" data-bs-toggle="pill" data-bs-target="#content-anio" type="button" role="tab">Título y Año</button>
+                        <button class="nav-link btn-sm" id="tab-anio" data-bs-toggle="pill" data-bs-target="#content-anio" type="button" role="tab">Título y Año</button>
                     </li>
                 </ul>
 
-                <!-- Contenido de las pestañas de búsqueda -->
+                <!-- Contenido de las pestañas -->
                 <div class="tab-content" id="searchTabsContent">
                     <!-- Búsqueda 1: Solo por Título -->
                     <div class="tab-pane fade show active" id="content-titulo" role="tabpanel">
-                        <div class="input-group mb-3">
-                            <input type="text" id="input-buscar-titulo" class="form-control" placeholder="Ej. Matrix, Star Wars...">
-                            <button class="btn btn-primary" onclick="buscarPeliculasPorTitulo()">Buscar</button>
+                        <div class="input-group shadow-sm">
+                            <input type="text" id="input-buscar-titulo" class="form-control form-control-lg fs-6" placeholder="Ej. Matrix, Star Wars...">
+                            <button class="btn btn-primary px-4 fw-semibold" onclick="buscarPeliculasPorTitulo()">Buscar</button>
                         </div>
                     </div>
 
-                    <!-- Búsqueda 2: Título y Año -->
+                    <!-- Búsqueda 2: Título y Año (Adaptable en grid con flex/column) -->
                     <div class="tab-pane fade" id="content-anio" role="tabpanel">
                         <div class="row g-2">
-                            <div class="col-md-7">
-                                <input type="text" id="input-buscar-titulo-anio" class="form-control" placeholder="Título de la película">
+                            <div class="col-12 col-sm-7">
+                                <input type="text" id="input-buscar-titulo-anio" class="form-control form-control-lg fs-6" placeholder="Título de la película">
                             </div>
-                            <div class="col-md-3">
-                                <input type="number" id="input-buscar-anio" class="form-control" placeholder="Año (ej. 1999)">
+                            <div class="col-12 col-sm-3">
+                                <input type="number" id="input-buscar-anio" class="form-control form-control-lg fs-6" placeholder="Año (ej. 1999)">
                             </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-primary w-100" onclick="buscarPeliculasPorTituloYAnio()">Buscar</button>
+                            <div class="col-12 col-sm-2">
+                                <button class="btn btn-primary w-100 h-100 fw-semibold" onclick="buscarPeliculasPorTituloYAnio()">Buscar</button>
                             </div>
                         </div>
                     </div>
@@ -76,37 +77,39 @@
             </div>
         </div>
 
-        <!-- RESULTADOS DE BÚSQUEDA (GRID) -->
-        <div id="movies-grid" class="row row-cols-1 row-cols-md-4 g-4 mb-5">
-            <!-- Las tarjetas de películas se inyectarán dinámicamente aquí con JavaScript -->
+        <!-- RESULTADOS DE BÚSQUEDA (GRID RESPONSIVE DE BOOTSTRAP) -->
+        <!-- row-cols-1 en móviles, row-cols-sm-2 en tablets, row-cols-md-3 en portátiles, row-cols-lg-4 en escritorios -->
+        <div id="movies-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            <!-- Las tarjetas de películas se inyectarán dinámicamente aquí -->
         </div>
 
         <!-- SECCIÓN DE DETALLE Y COMENTARIOS (Oculta por defecto) -->
         <div id="movie-detail-section" class="d-none">
-            <button class="btn btn-secondary mb-3" onclick="volverInicio()">← Volver a la búsqueda</button>
-            <div class="card shadow p-4 mb-4">
-                <div class="row" id="movie-detail-content">
+            <button class="btn btn-outline-secondary mb-3 btn-sm fw-semibold" onclick="volverInicio()">← Volver a la búsqueda</button>
+            
+            <div class="card shadow border-0 p-3 p-md-4 mb-4">
+                <div class="row g-4 align-items-center" id="movie-detail-content">
                     <!-- Detalle de la película -->
                 </div>
             </div>
 
             <!-- BLOQUE DE COMENTARIOS -->
-            <div class="card shadow p-4">
-                <h3 class="mb-3">Comentarios</h3>
+            <div class="card shadow border-0 p-3 p-md-4">
+                <h3 class="h4 mb-3">Comentarios y Opiniones</h3>
                 <div id="comments-list" class="list-group mb-4">
                     <!-- Lista de comentarios -->
                 </div>
 
-                <!-- Formulario para comentar (Requiere login) -->
+                <!-- Formulario para comentar -->
                 <div id="comment-form-container">
-                    <div class="alert alert-info" id="comment-login-warning">
-                        Debes <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">iniciar sesión</a> para dejar un comentario.
+                    <div class="alert alert-info py-2 small" id="comment-login-warning">
+                        Debes <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="alert-link">iniciar sesión</a> para dejar un comentario.
                     </div>
                     <div id="comment-box" class="d-none">
                         <div class="mb-3">
                             <textarea id="texto-comentario" class="form-control" rows="3" placeholder="Escribe tu opinión sobre la película..."></textarea>
                         </div>
-                        <button class="btn btn-success" onclick="enviarComentario()">Publicar Comentario</button>
+                        <button class="btn btn-success px-4 fw-semibold" onclick="enviarComentario()">Publicar Comentario</button>
                     </div>
                 </div>
             </div>
@@ -114,24 +117,29 @@
 
     </div>
 
+    <!-- PIE DE PÁGINA SIMPLE -->
+    <footer class="bg-white text-center py-3 text-muted small border-top mt-auto">
+        MovieSearch App &copy; 2026 - FastAPI & Bootstrap 5
+    </footer>
+
     <!-- MODAL DE LOGIN -->
     <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fs-6">Iniciar Sesión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label">Usuario (username)</label>
+                        <label class="form-label small fw-bold">Usuario (username)</label>
                         <input type="text" id="login-username" class="form-control" placeholder="Tu usuario único">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
+                        <label class="form-label small fw-bold">Contraseña</label>
                         <input type="password" id="login-password" class="form-control" placeholder="Tu contraseña">
                     </div>
-                    <button type="button" class="btn btn-primary w-100" onclick="ejecutarLogin()">Entrar</button>
+                    <button type="button" class="btn btn-primary w-100 fw-semibold" onclick="ejecutarLogin()">Entrar</button>
                 </div>
             </div>
         </div>
@@ -139,26 +147,26 @@
 
     <!-- MODAL DE REGISTRO -->
     <div class="modal fade" id="registroModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Registro de Nuevo Usuario</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fs-6 fw-bold">Registro de Nuevo Usuario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label">Usuario (username único)</label>
+                        <label class="form-label small fw-bold">Usuario (username único)</label>
                         <input type="text" id="reg-username" class="form-control" placeholder="Ej. pepa123">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nombre visible (para comentarios)</label>
+                        <label class="form-label small fw-bold">Nombre visible (para comentarios)</label>
                         <input type="text" id="reg-nombre" class="form-control" placeholder="Ej. Pepa Pérez">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
+                        <label class="form-label small fw-bold">Contraseña</label>
                         <input type="password" id="reg-password" class="form-control" placeholder="Contraseña segura">
                     </div>
-                    <button type="button" class="btn btn-warning w-100" onclick="ejecutarRegistro()">Registrarse</button>
+                    <button type="button" class="btn btn-warning w-100 fw-semibold text-dark" onclick="ejecutarRegistro()">Registrarse</button>
                 </div>
             </div>
         </div>

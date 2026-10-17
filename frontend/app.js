@@ -356,8 +356,61 @@ async function enviarComentario() {
 }
 
 function volverInicio() {
+    // 1. Ocultar sección de detalle y mostrar sección de búsqueda y rejilla
     document.getElementById("movie-detail-section").classList.add("d-none");
     document.getElementById("search-section").classList.remove("d-none");
     document.getElementById("movies-grid").classList.remove("d-none");
+    
+    // 2. Limpiar la rejilla de resultados de películas
+    document.getElementById("movies-grid").innerHTML = "";
+
+    // 3. Limpiar los inputs de búsqueda de ambas pestañas
+    const inputTitulo = document.getElementById("input-buscar-titulo");
+    const inputTituloAnio = document.getElementById("input-buscar-titulo-anio");
+    const inputAnio = document.getElementById("input-buscar-anio");
+
+    if (inputTitulo) inputTitulo.value = "";
+    if (inputTituloAnio) inputTituloAnio.value = "";
+    if (inputAnio) inputAnio.value = "";
+
+    // 4. Restablecer el ID actual de la película seleccionada
     currentImdbId = null;
+}
+
+
+/* ==========================================
+   LIMPIEZA Y GESTIÓN DE PESTAÑAS DE BÚSQUEDA
+   ========================================== */
+
+// Escuchamos cuando el usuario cambia de pestaña de búsqueda para limpiar campos y resultados
+document.addEventListener("DOMContentLoaded", () => {
+    const tabTituloBtn = document.getElementById("tab-titulo");
+    const tabAnioBtn = document.getElementById("tab-anio");
+
+    if (tabTituloBtn && tabAnioBtn) {
+        tabTituloBtn.addEventListener("click", () => {
+            limpiarCamposBusqueda('anio'); // Limpia los de año al ir a título
+        });
+
+        tabAnioBtn.addEventListener("click", () => {
+            limpiarCamposBusqueda('titulo'); // Limpia el de título al ir a año
+        });
+    }
+});
+
+function limpiarCamposBusqueda(origen) {
+    const inputTitulo = document.getElementById("input-buscar-titulo");
+    const inputTituloAnio = document.getElementById("input-buscar-titulo-anio");
+    const inputAnio = document.getElementById("input-buscar-anio");
+    const moviesGrid = document.getElementById("movies-grid");
+
+    if (origen === 'titulo') {
+        if (inputTitulo) inputTitulo.value = "";
+    } else if (origen === 'anio') {
+        if (inputTituloAnio) inputTituloAnio.value = "";
+        if (inputAnio) inputAnio.value = "";
+    }
+    
+    // Opcional: si quieres que al cambiar de pestaña también se limpien los resultados anteriores:
+    // if (moviesGrid) moviesGrid.innerHTML = "";
 }
