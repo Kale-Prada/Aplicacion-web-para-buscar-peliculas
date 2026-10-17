@@ -150,7 +150,7 @@ async function buscarPeliculas() {
         // OMDb devuelve un objeto con la propiedad "Search" si encuentra resultados
         if (data.Search && Array.isArray(data.Search)) {
             data.Search.forEach(pelicula => {
-                const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "https://via.placeholder.com/300x450?text=Sin+Imagen";
+                const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
                 
                 const col = document.createElement("div");
                 col.className = "col";
@@ -222,7 +222,7 @@ function renderizarResultados(data) {
 
     if (data.Search && Array.isArray(data.Search)) {
         data.Search.forEach(pelicula => {
-            const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "https://via.placeholder.com/300x450?text=Sin+Imagen";
+            const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
             
             const col = document.createElement("div");
             col.className = "col";
@@ -252,37 +252,63 @@ let currentImdbId = null;
 async function verDetallePelicula(imdbId) {
     currentImdbId = imdbId;
 
-    // Ocultar sección de búsqueda y mostrar detalle
+    // Ocultar sección de búsqueda y rejilla, y mostrar la sección de detalle
     document.getElementById("search-section").classList.add("d-none");
     document.getElementById("movies-grid").classList.add("d-none");
     document.getElementById("movie-detail-section").classList.remove("d-none");
 
-    // 1. Obtener detalles de la película
+    // 1. Obtener detalles completos de la película mediante el endpoint /api/peliculas/detalle/{imdbId}
     try {
         const resDetalle = await fetch(`${API_URL}/peliculas/detalle/${imdbId}`);
         const pelicula = await resDetalle.json();
 
         const detailContent = document.getElementById("movie-detail-content");
-        const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "https://via.placeholder.com/300x450?text=Sin+Imagen";
+        const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
 
+        // Renderizamos toda la ficha técnica detallada adaptada de forma responsiva
         detailContent.innerHTML = `
-            <div class="col-md-4 text-center">
-                <img src="${poster}" class="img-fluid rounded shadow" alt="${pelicula.Title}">
+            <div class="col-12 col-md-4 text-center">
+                <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;">
             </div>
-            <div class="col-md-8">
-                <h2>${pelicula.Title} (${pelicula.Year})</h2>
-                <p><strong>Director:</strong> ${pelicula.Director}</p>
-                <p><strong>Género:</strong> ${pelicula.Genre}</p>
-                <p><strong>Actores:</strong> ${pelicula.Actors}</p>
-                <hr>
-                <p><strong>Sinopsis:</strong> ${pelicula.Plot}</p>
+            <div class="col-12 col-md-8">
+                <h2 class="fw-bold text-primary mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
+                
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-secondary">Clasificación: ${pelicula.Rated || 'N/A'}</span>
+                    <span class="badge bg-dark">Duración: ${pelicula.Runtime || 'N/A'}</span>
+                    <span class="badge bg-primary">Tipo: ${pelicula.Type || 'N/A'}</span>
+                    <span class="badge bg-primary">Género: ${pelicula.Genre || 'N/A'}</span>
+                    <span class="badge bg-success">⭐ IMDb: ${pelicula.imdbRating || 'N/A'} (${pelicula.imdbVotes || '0'} votos)</span>
+                    <span class="badge bg-success">IMDb: ${pelicula.imdbID || 'N/A'} </span>
+                </div>
+
+                <p class="mb-2"><strong>Director:</strong> ${pelicula.Director || 'N/A'}</p>
+                <p class="mb-2"><strong>Guionista/s:</strong> ${pelicula.Writer || 'N/A'}</p>
+                <p class="mb-2"><strong>Actores:</strong> ${pelicula.Actors || 'N/A'}</p>
+                <p class="mb-2"><strong>Lenguaje:</strong> ${pelicula.Language || 'N/A'}</p>
+                <p class="mb-2"><strong>Estreno:</strong> ${pelicula.Released || 'N/A'} | <strong>País:</strong> ${pelicula.Country || 'N/A'}</p>
+                
+                <hr class="my-3">
+                
+                <h5 class="fw-bold text-dark">Sinopsis:</h5>
+                <p class="text-muted fst-italic">${pelicula.Plot || 'Sin sinopsis disponible.'}</p>
+                
+                <hr class="my-3">
+                
+                <p class="small text-muted mb-1"><strong>Premios:</strong> ${pelicula.Awards || 'Ninguno'}</p>
+                <p class="small text-muted mb-0"><strong>Taquilla (BoxOffice):</strong> ${pelicula.BoxOffice || 'N/A'}</p>
             </div>
         `;
     } catch (error) {
-        console.error("Error al cargar detalle:", error);
+        console.error("Error al cargar detalle de la película:", error);
+        document.getElementById("movie-detail-content").innerHTML = `
+            <div class="col-12 text-center text-danger">
+                <p>No se pudo cargar la información detallada de la película.</p>
+            </div>
+        `;
     }
 
-    // 2. Cargar comentarios de la película
+    // 2. Cargar comentarios de la película seleccionada
     cargarComentarios(imdbId);
 }
 
