@@ -238,13 +238,15 @@ function renderizarResultados(data, tipoBusqueda = "título") {
         }
 
         data.Search.forEach(pelicula => {
+            // Si OMDb devuelve "N/A", uso mi propio poster
             const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
             
             const col = document.createElement("div");
             col.className = "col";
             col.innerHTML = `
                 <div class="card h-100 shadow-sm" style="cursor: pointer;" onclick="verDetallePelicula('${pelicula.imdbID}')">
-                    <img src="${poster}" class="card-img-top" alt="${pelicula.Title}" style="height: 350px; object-fit: cover;">
+                    <!-- onerror captura el error 404 de la imagen externa y carga mi poster con  'temporalmente no disponible' -->
+                    <img src="${poster}" class="card-img-top" alt="${pelicula.Title}" style="height: 350px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
                     <div class="card-body">
                         <h5 class="card-title fs-6 text-truncate">${pelicula.Title}</h5>
                         <p class="card-text text-muted small">${pelicula.Year}</p>
@@ -270,9 +272,11 @@ let currentImdbId = null;
 async function verDetallePelicula(imdbId) {
     currentImdbId = imdbId;
 
-    // Ocultar sección de búsqueda y rejilla, y mostrar la sección de detalle
+    // Ocultar sección de búsqueda, rejilla y contador, y mostrar la sección de detalle
     document.getElementById("search-section").classList.add("d-none");
     document.getElementById("movies-grid").classList.add("d-none");
+    const counterContainer = document.getElementById("search-counter-container");
+    if (counterContainer) counterContainer.classList.add("d-none");
     document.getElementById("movie-detail-section").classList.remove("d-none");
 
     // 1. Obtener detalles completos de la película mediante el endpoint /api/peliculas/detalle/{imdbId}
@@ -281,12 +285,14 @@ async function verDetallePelicula(imdbId) {
         const pelicula = await resDetalle.json();
 
         const detailContent = document.getElementById("movie-detail-content");
+        // Si no existe la imagen en OMDb ('N/A'), asignamos tu imagen por defecto
         const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
 
         // Renderizamos toda la ficha técnica detallada adaptada de forma responsiva
         detailContent.innerHTML = `
             <div class="col-12 col-md-4 text-center">
-                <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;">
+                <!-- onerror captura el error 404 si la URL de la API falla al descargar -->
+                <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
             </div>
             <div class="col-12 col-md-8">
                 <h2 class="fw-bold text-primary mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
