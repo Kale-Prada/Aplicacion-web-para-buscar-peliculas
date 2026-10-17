@@ -381,6 +381,19 @@ async function enviarComentario() {
     }
 }
 
+/* ==========================================
+   NAVEGACIÓN Y CONTROL DE VISTAS
+   ========================================== */
+
+// Vuelve a la lista de resultados de la búsqueda actual (mantiene las tarjetas visibles)
+function volverAResultados() {
+    document.getElementById("movie-detail-section").classList.add("d-none");
+    document.getElementById("search-section").classList.remove("d-none");
+    document.getElementById("movies-grid").classList.remove("d-none");
+    currentImdbId = null;
+}
+
+// Vuelve al inicio absoluto: limpia campos de búsqueda y vacía la rejilla
 function volverInicio() {
     // 1. Ocultar sección de detalle y mostrar sección de búsqueda y rejilla
     document.getElementById("movie-detail-section").classList.add("d-none");
