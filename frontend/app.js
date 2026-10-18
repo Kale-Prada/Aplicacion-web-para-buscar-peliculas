@@ -56,7 +56,7 @@ async function ejecutarLogin() {
     const passwordInput = document.getElementById("login-password").value.trim();
 
     if (!usernameInput || !passwordInput) {
-        alert("Por favor, rellena todos los campos.");
+        mostrarAlerta("Por favor, rellena todos los campos.");
         return;
     }
 
@@ -80,13 +80,14 @@ async function ejecutarLogin() {
             modal.hide();
 
             actualizarEstadoInterfaz();
-            alert(data.mensaje);
+            //reemplazo alert() nativo por la ventana personalizada con bootstrap
+            mostrarAlerta(data.mensaje);
         } else {
-            alert(data.detail || "Error al iniciar sesión.");
+            mostrarAlerta(data.detail || "Error al iniciar sesión.");
         }
     } catch (error) {
         console.error("Error de red en login:", error);
-        alert("No se pudo conectar con el servidor.");
+        mostrarAlerta("No se pudo conectar con el servidor.");
     }
 }
 
@@ -96,7 +97,7 @@ async function ejecutarRegistro() {
     const passwordInput = document.getElementById("reg-password").value.trim();
 
     if (!usernameInput || !nombreMostrarInput || !passwordInput) {
-        alert("Todos los campos son obligatorios.");
+        mostrarAlerta("Todos los campos son obligatorios.");
         return;
     }
 
@@ -304,12 +305,16 @@ async function verDetallePelicula(imdbId) {
             return;
         }
 
-        // Ocultar sección de búsqueda, rejilla y contador, y mostrar la sección de detalle
+        // Ocultar sección de búsqueda, rejilla, contador y HERO BANNER. Mostrar la sección de detalle
+       
         document.getElementById("search-section").classList.add("d-none");
+        //document.getElementById("hero-banner-section").classList.add("d-none"); // <-- NUEVO
         document.getElementById("movies-grid").classList.add("d-none");
         const counterContainer = document.getElementById("search-counter-container");
+
         if (counterContainer) counterContainer.classList.add("d-none");
         document.getElementById("movie-detail-section").classList.remove("d-none");
+
 
         const detailContent = document.getElementById("movie-detail-content");
         // Si no existe la imagen en OMDb ('N/A'), asignamos tu imagen por defecto
@@ -322,7 +327,7 @@ async function verDetallePelicula(imdbId) {
                 <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
             </div>
             <div class="col-12 col-md-8">
-                <h2 class="fw-bold text-primary mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
+                <h2 class="fw-bold text-kale mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
                 
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     <span class="badge bg-secondary">Clasificación: ${pelicula.Rated || 'N/A'}</span>
@@ -376,7 +381,7 @@ async function cargarComentarios(imdbId) {
                 item.className = "list-group-item list-group-item-action flex-column align-items-start mb-2 rounded shadow-sm";
                 item.innerHTML = `
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 text-primary fw-bold">👤 ${c.persona || 'Anónimo'}</h6>
+                        <h6 class="mb-1 text-kale fw-bold">👤 ${c.persona || 'Anónimo'}</h6>
                         <small class="text-muted">${c.fecha || ''}</small>
                     </div>
                     <p class="mb-1 mt-2">${c.comentario}</p>
@@ -551,5 +556,28 @@ function limpiarOtrasPestañas(pestañaActiva) {
         if (inputTitulo) inputTitulo.value = "";
         if (inputTituloAnio) inputTituloAnio.value = "";
         if (inputAnio) inputAnio.value = "";
+    }
+}
+
+
+/* ==========================================
+   MOSTRAR ALERTAS PERSONALIZADAS CON BOOTSTRAP
+   ========================================== */
+
+// Función auxiliar para mostrar alertas personalizadas con botón "Aceptar"
+// invocando el Modal de Bootstrap par que muestre un mensaje bonito y así 
+// reemplazar el 'alert()' de Javascript
+
+function mostrarAlerta(mensaje) {
+    const mensajeEl = document.getElementById("custom-alert-message");
+    if (mensajeEl) {
+        mensajeEl.textContent = mensaje;
+    }
+    const modalEl = document.getElementById("customAlertModal");
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    } else {
+        alert(mensaje); // Fallback por seguridad si el modal no estuviera cargado
     }
 }
