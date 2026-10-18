@@ -43,7 +43,7 @@ function cerrarSesion() {
     localStorage.removeItem("usernameActual");
     localStorage.removeItem("nombreMostrarActual");
     actualizarEstadoInterfaz();
-    alert("Has cerrado sesión correctamente.");
+    mostrarAlerta("Has cerrado sesión correctamente.");
 }
 
 
@@ -115,17 +115,17 @@ async function ejecutarRegistro() {
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.mensaje);
+            mostrarAlerta(data.mensaje);
             // Cerramos el modal de registro
             const modalEl = document.getElementById("registroModal");
             const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
             modal.hide();
         } else {
-            alert(data.detail || "Error en el registro.");
+            mostrarAlerta(data.detail || "Error en el registro.");
         }
     } catch (error) {
         console.error("Error de red en registro:", error);
-        alert("No se pudo conectar con el servidor.");
+        mostrarAlerta("No se pudo conectar con el servidor.");
     }
 }
 
@@ -137,7 +137,7 @@ async function ejecutarRegistro() {
 async function buscarPeliculas() {
     const query = document.getElementById("input-buscar").value.trim();
     if (!query) {
-        alert("Introduce un título para buscar.");
+        mostrarAlerta("Introduce un título para buscar.");
         return;
     }
 
@@ -171,7 +171,7 @@ async function buscarPeliculas() {
         }
     } catch (error) {
         console.error("Error al buscar películas:", error);
-        alert("Hubo un error al realizar la búsqueda.");
+        mostrarAlerta("Hubo un error al realizar la búsqueda.");
     }
 }
 
@@ -184,7 +184,7 @@ async function buscarPeliculas() {
 async function buscarPeliculasPorTitulo() {
     const query = document.getElementById("input-buscar-titulo").value.trim();
     if (!query) {
-        alert("Introduce un título para buscar.");
+        mostrarAlerta("Introduce un título para buscar.");
         return;
     }
 
@@ -195,7 +195,7 @@ async function buscarPeliculasPorTitulo() {
         renderizarResultados(data, "titulo");
     } catch (error) {
         console.error("Error al buscar películas:", error);
-        alert("Hubo un error al realizar la búsqueda.");
+        mostrarAlerta("Hubo un error al realizar la búsqueda.");
     }
 }
 
@@ -206,7 +206,7 @@ async function buscarPeliculasPorTituloYAnio() {
     const year = document.getElementById("input-buscar-anio").value.trim();
 
     if (!titulo || !year) {
-        alert("Debes indicar tanto el título como el año de la película.");
+        mostrarAlerta("Debes indicar tanto el título como el año de la película.");
         return;
     }
 
@@ -217,7 +217,7 @@ async function buscarPeliculasPorTituloYAnio() {
         renderizarResultados(data, "titulo");
     } catch (error) {
         console.error("Error al buscar por título y año:", error);
-        alert("No se encontraron películas con esos criterios o hubo un error en la red.");
+        mostrarAlerta("No se encontraron películas con esos criterios o hubo un error en la red.");
     }
 }
 
@@ -228,7 +228,7 @@ async function buscarPeliculaPorImdbId() {
     const imdbId = inputImdb ? inputImdb.value.trim() : "";
 
     if (!imdbId) {
-        alert("Por favor, introduce un identificador válido de IMDb (ej. tt0133093).");
+        mostrarAlerta("Por favor, introduce un identificador válido de IMDb (ej. tt0133093).");
         return;
     }
 
@@ -279,7 +279,12 @@ function renderizarResultados(data, tipoBusqueda = "título") {
     } else {
         // Si no hay resultados, ocultamos el contador y mostramos el aviso de que no hay coincidencias
         if (counterContainer) counterContainer.classList.add("d-none");
-        moviesGrid.innerHTML = `<div class="col-12 text-center"><p class="text-muted">No se encontraron películas que coincidan con los criterios de búsqueda.</p></div>`;
+        /* Asegurarse de dejar limpia el campo para que no quede restos de búsquedas anteriores */
+        moviesGrid.innerHTML = "";
+        
+        // Llamada a tu función personalizada para mostrar el aviso con los colores corporativos
+        mostrarAlerta("No se encontraron películas que coincidan con los criterios de búsqueda.");
+        
     }
 }
 
@@ -300,7 +305,7 @@ async function verDetallePelicula(imdbId) {
 
         // Validamos si OMDb API devuelve que el ID no existe ("Response": "False") o no trae título
         if (pelicula.Response === "False" || !pelicula.Title) {
-            alert("El identificador IMDb introducido no existe o no es válido. Por favor, comprueba el ID e introduce otro.");
+            mostrarAlerta("El identificador IMDb introducido no existe o no es válido. Por favor, comprueba el ID e inténtalo de nuevo.");
             volverInicio(); // Regresa al buscador principal para que pueda intentar con otro ID
             return;
         }
@@ -327,37 +332,37 @@ async function verDetallePelicula(imdbId) {
                 <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
             </div>
             <div class="col-12 col-md-8">
-                <h2 class="fw-bold text-kale mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
+                <h2 class="fw-bold mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
                 
                 <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge bg-secondary">Clasificación: ${pelicula.Rated || 'N/A'}</span>
-                    <span class="badge bg-dark">Duración: ${pelicula.Runtime || 'N/A'}</span>
-                    <span class="badge bg-primary">Tipo: ${pelicula.Type || 'N/A'}</span>
-                    <span class="badge bg-primary">Género: ${pelicula.Genre || 'N/A'}</span>
-                    <span class="badge bg-success">⭐ IMDb: ${pelicula.imdbRating || 'N/A'} (${pelicula.imdbVotes || '0'} votos)</span>
-                    <span class="badge bg-success">IMDb: ${pelicula.imdbID || 'N/A'} </span>
+                    <span class="badge badge-kale-main">Tipo: ${pelicula.Type || 'N/A'}</span>
+                    <span class="badge badge-kale-deep">Género: ${pelicula.Genre || 'N/A'}</span>
+                    <span class="badge badge-slate">Clasificación: ${pelicula.Rated || 'N/A'}</span>
+                    <span class="badge badge-charcoal">Duración: ${pelicula.Runtime || 'N/A'}</span>
+                    <span class="badge badge-emerald">⭐ IMDb: ${pelicula.imdbRating || 'N/A'} (${pelicula.imdbVotes || '0'} votos)</span>
+                    <span class="badge badge-emerald">IMDb: ${pelicula.imdbID || 'N/A'} </span>
                 </div>
 
-                <p class="mb-2"><strong>Director:</strong> ${pelicula.Director || 'N/A'}</p>
-                <p class="mb-2"><strong>Guionista/s:</strong> ${pelicula.Writer || 'N/A'}</p>
-                <p class="mb-2"><strong>Actores:</strong> ${pelicula.Actors || 'N/A'}</p>
-                <p class="mb-2"><strong>Lenguaje:</strong> ${pelicula.Language || 'N/A'}</p>
-                <p class="mb-2"><strong>Estreno:</strong> ${pelicula.Released || 'N/A'} | <strong>País:</strong> ${pelicula.Country || 'N/A'}</p>
+                <p class="mb-1 fw-normal"><strong>Director:</strong> <span class="fw-normal small">${pelicula.Director || 'N/A'}</span></p>
+                <p class="mb-2 fw-normal"><strong>Guionista/s:</strong> <span class="fw-normal small">${pelicula.Writer || 'N/A'}</span></p>
+                <p class="mb-2 fw-normal"><strong>Actores:</strong> <span class="fw-normal small">${pelicula.Actors || 'N/A'}</span></p>
+                <p class="mb-2 fw-normal"><strong>Idioma:</strong> <span class="fw-normal small">${pelicula.Language || 'N/A'}</span></p>
+                <p class="mb-2 fw-normal"><strong>Estreno:</strong> <span class="fw-normal small">${pelicula.Released || 'N/A'}</span> | <strong>País:</strong> <span class="fw-normal small">${pelicula.Country || 'N/A'}</span></p>
                 
                 <hr class="my-3">
                 
                 <h5 class="fw-bold text-dark">Sinopsis:</h5>
-                <p class="text-muted fst-italic">${pelicula.Plot || 'Sin sinopsis disponible.'}</p>
+                <p class="small text-muted fst-italic fw-normal">${pelicula.Plot || 'Sin sinopsis disponible.'}</p>
                 
                 <hr class="my-3">
                 
-                <p class="small text-muted mb-1"><strong>Premios:</strong> ${pelicula.Awards || 'Ninguno'}</p>
-                <p class="small text-muted mb-0"><strong>Taquilla (BoxOffice):</strong> ${pelicula.BoxOffice || 'N/A'}</p>
+                <p class="small text-muted mb-1"><strong>Premios:</strong> <span class="fw-normal small">${pelicula.Awards || 'Ninguno'}</span></p>
+                <p class="small text-muted mb-0"><strong>Taquilla (BoxOffice):</strong> <span class="fw-normal small">${pelicula.BoxOffice || 'N/A'}</span></p>
             </div>
         `;
     } catch (error) {
         console.error("Error al cargar detalle de la película:", error);
-        alert("Hubo un error de conexión al consultar el ID de IMDb.");
+        mostrarAlerta("Hubo un error de conexión al consultar el ID de IMDb.");
         volverInicio();
         return;
     }
@@ -379,17 +384,19 @@ async function cargarComentarios(imdbId) {
                 // c.persona contendrá el 'nombre_a_mostrar' gracias al JOIN del backend
                 const item = document.createElement("div");
                 item.className = "list-group-item list-group-item-action flex-column align-items-start mb-2 rounded shadow-sm";
+                
+                // Función que pinta los comentarios
                 item.innerHTML = `
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 text-kale fw-bold">👤 ${c.persona || 'Anónimo'}</h6>
-                        <small class="text-muted">${c.fecha || ''}</small>
+                        <h6 class="mb-1 text-kale fw-bold small">👤 ${c.persona || 'Anónimo'}</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">${c.fecha || ''}</small>
                     </div>
-                    <p class="mb-1 mt-2">${c.comentario}</p>
+                    <p class="mb-1 mt-1 small text-dark fw-normal">${c.comentario}</p>
                 `;
                 commentsList.appendChild(item);
             });
         } else {
-            commentsList.innerHTML = `<p class="text-muted fst-italic">Aún no hay comentarios para esta película. ¡Sé el primero en opinar!</p>`;
+            commentsList.innerHTML = `<p class="text-muted fst-italic small">Aún no hay comentarios para esta película. ¡Sé el primero en opinar!</p>`;
         }
     } catch (error) {
         console.error("Error al cargar comentarios:", error);
@@ -401,17 +408,17 @@ async function enviarComentario() {
     const usernameActual = localStorage.getItem("usernameActual");
 
     if (!textoComentario) {
-        alert("El comentario no puede estar vacío.");
+        mostrarAlerta("El comentario no puede estar vacío.");
         return;
     }
 
     if (!usernameActual) {
-        alert("Debes iniciar sesión para comentar.");
+        mostrarAlerta("Debes iniciar sesión para comentar.");
         return;
     }
 
     try {
-        // Enviamos el comentario usando el campo 'username' adaptado en tu backend
+        // Enviamos el comentario usando el campo 'username' adaptado en el backend
         const response = await fetch(`${API_URL}/comentarios/${currentImdbId}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -427,11 +434,11 @@ async function enviarComentario() {
             document.getElementById("texto-comentario").value = "";
             cargarComentarios(currentImdbId); // Recargamos la lista de comentarios
         } else {
-            alert(data.detail || "Error al guardar el comentario.");
+            mostrarAlerta(data.detail || "Error al guardar el comentario.");
         }
     } catch (error) {
         console.error("Error de red al comentar:", error);
-        alert("No se pudo enviar el comentario.");
+        mostrarAlerta("No se pudo enviar el comentario.");
     }
 }
 
@@ -578,6 +585,6 @@ function mostrarAlerta(mensaje) {
         const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         modal.show();
     } else {
-        alert(mensaje); // Fallback por seguridad si el modal no estuviera cargado
+        mostrarAlerta(mensaje); // Fallback por seguridad si el modal no estuviera cargado
     }
 }

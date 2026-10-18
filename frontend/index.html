@@ -5,6 +5,10 @@
     <!-- Meta viewport obligatorio para diseño responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Películas - Kale App</title>
+
+    <!-- Favicon corporativo -->
+    <link rel="icon" type="image/x-icon" href="/frontend/imgs/favicon.png">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -24,6 +28,11 @@
             background-color: #1aa5a5 !important;
             border-color: #1aa5a5 !important;
             color: #ffffff !important;
+        }
+
+        /* Clase para aplicar colores a la cabecera de la ventana de alerta */
+        .bg-kale {
+            background-color: #1aa5a5 !important;
         }
         .btn-kale:hover, .btn-kale:focus {
             background-color: #158888 !important;
@@ -57,6 +66,30 @@
         }
 
     
+    </style>
+
+    <style>
+        /* --- PALETA MONOCROMÁTICA KALE APP (Fichas de películas) --- */
+        .badge-kale-main {
+            background-color: #1aa5a5 !important; /* Tu turquesa corporativo principal */
+            color: #ffffff !important;
+        }
+        .badge-kale-deep {
+            background-color: #0e7c7b !important; /* Turquesa oscuro/profundo para géneros */
+            color: #ffffff !important;
+        }
+        .badge-slate {
+            background-color: #495057 !important; /* Gris pizarra elegante para clasificaciones */
+            color: #ffffff !important;
+        }
+        .badge-charcoal {
+            background-color: #212529 !important; /* Carbón oscuro para duración */
+            color: #ffffff !important;
+        }
+        .badge-emerald {
+            background-color: #198754 !important; /* Verde esmeralda para IMDb y puntuaciones */
+            color: #ffffff !important;
+        }
     </style>
 
 </head>
@@ -108,9 +141,16 @@
                     <p class="text-muted small mb-4">
                         Explora miles de títulos, descubre fichas técnicas completas, valoraciones de IMDb y comparte tus comentarios con la comunidad.
                     </p>
-                    <button class="btn text-white fw-semibold px-4 py-2 rounded-3 shadow-sm" style="background-color: #1aa5a5; border-color: #1aa5a5;" onclick="document.getElementById('input-buscar-titulo').focus()">
-                        ¿Qué vemos hoy?
-                    </button>
+
+                    <!-- Texto destacado con tu color corporativo -->
+                    <div class="text-center mb-3">
+                    <span class="fs-5 fw-bold text-kale">¿Qué vemos hoy?</span>
+                    </div>
+                    
+                    <!-- Caja corporativa estática para destacar el mensaje (sin comportamiento de botón) 
+                    <div class="d-inline-block text-white fw-semibold px-4 py-2 rounded-3 shadow-sm" style="background-color: #1aa5a5; border: 1px solid #1aa5a5; cursor: default;">¿Qué vemos hoy?
+                    </div>  -->
+
                 </div>
                 
                 <!-- Columna Derecha (Imagen Ilustrativa) -->
@@ -126,7 +166,7 @@
         <div id="search-section" class="row justify-content-center mb-5">
             <div class="col-12 col-md-10 col-lg-8 text-center px-3">
                 <h1 class="display-5 fw-bold mb-3">Encuentra tu película</h1>
-                <p class="text-muted mb-4">Busca rápidamente por título, afina tu búsqueda combinando año y título o introduce directamente el IMDb ID si lo conoces.</p>
+                <p class="text-muted mb-4">Busca rápidamente por título, afina tu búsqueda combinando año y título o introduce directamente el IMDb ID si lo conoces. <b>Recuerda escribir el título que buscas en inglés.</br> </p>
                 
                 <!-- Pestañas de tipo de búsqueda (son 3 opciones) -->
                 <ul class="nav nav-pills justify-content-center mb-3" id="searchTabs" role="tablist">
@@ -232,9 +272,9 @@
                     </div>
                     <div id="comment-box" class="d-none">
                         <div class="mb-3">
-                            <textarea id="texto-comentario" class="form-control" rows="3" placeholder="Escribe tu opinión sobre la película..."></textarea>
+                            <textarea id="texto-comentario" class="form-control small" rows="3" placeholder="Escribe tu opinión sobre la película..."></textarea>
                         </div>
-                        <button class="btn btn-success px-4 fw-semibold" onclick="enviarComentario()">Publicar Comentario</button>
+                        <button class="btn btn-kale px-4 fw-semibold" onclick="enviarComentario()">Publicar Comentario</button>
                     </div>
                 </div>
             </div>
@@ -248,23 +288,28 @@
     </footer>
 
     <!-- MODAL DE LOGIN -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fs-6">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content shadow">
+
+                <!-- Cabecera aplicando la clase bg-kale para el color corporativo -->
+                <div class="modal-header bg-kale text-white py-2 px-3">
+                    <h6 class="modal-title fw-bold">Iniciar Sesión</h6>
+                    <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
+                <!-- Cuerpo con esapciado reducido -->
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Usuario (username)</label>
-                        <input type="text" id="login-username" class="form-control" placeholder="Tu usuario único">
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold text-muted mb-1">Usuario (username)</label>
+                        <input type="text" id="login-username" class="form-control form-control-sm" placeholder="Tu usuario único">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Contraseña</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="Tu contraseña">
+                        <label class="form-label small fw-semibold text-muted mb-1">Contraseña</label>
+                        <input type="password" id="login-password" class="form-control form-control-sm" placeholder="Tu contraseña">
                     </div>
-                    <button type="button" class="btn btn-primary w-100 fw-semibold" onclick="ejecutarLogin()">Entrar</button>
+                    <!-- Botón principal con tu clase btn-kale -->
+                    <button type="button" class="btn btn-kale btn-sm w-100 fw-semibold py-2" onclick="ejecutarLogin()">Entrar</button>
                 </div>
             </div>
         </div>
@@ -304,13 +349,15 @@
 
 
 <!-- MODAL DE ALERTA PERSONALIZADO (Sustituye al alert nativo) por Bootstrap -->
+ <!-- Mensajes de éxito, error, avisos de acceso, etcétera-->
+
 <div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true">
     <!-- Añadimos 'modal-sm' para hacer la ventana estrecha y compacta -->
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content shadow">
             
-            <!-- Cabecera con tu color personalizado y texto más pequeño -->
-            <div class="modal-header text-white py-2 px-3" style="background-color: #1aa5a5 !important;">
+            <!-- Cabecera con la clase personalizada bg-kale y texto más pequeño -->
+            <div class="modal-header bg-kale text-white py-2 px-3">
                 <h6 class="modal-title fw-bold">Aviso</h6>
                 <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -322,7 +369,7 @@
             
             <!-- Botón de pie adaptado al tamaño pequeño -->
             <div class="modal-footer justify-content-center py-2">
-                <button type="button" class="btn text-white btn-sm px-4 fw-semibold" style="background-color: #1aa5a5 !important; border-color: #1aa5a5 !important;" data-bs-dismiss="modal">Aceptar</button>
+                <button type="button" class="btn btn-kale text-white btn-sm px-4 fw-semibold" border-color: #1aa5a5 !important;" data-bs-dismiss="modal">Aceptar</button>
             </div>
             
         </div>
