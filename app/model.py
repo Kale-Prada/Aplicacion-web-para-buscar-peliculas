@@ -156,3 +156,56 @@ class MovieModel:
         except Exception as e:
             print(f"Error al obtener comentarios: {e}")
             return []
+
+
+    
+    def guardar_o_actualizar_calificacion(self, id_pelicula: str, username: str, puntuacion: int):
+        """
+        Inserta una calificación de 1 a 5 para una película y un usuario.
+        Si el usuario ya había calificado esa película, actualiza la puntuación y la fecha.
+        """
+        from datetime import datetime
+        # Obtenemos la fecha actual con la zona horaria o formato que ya se usa en la app
+        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+        # ON CONFLICT ... DO UPDATE provecho la restricción UNIQUE creada en la tabla de base de datos 'calificacion'. 
+        # Si el usuario vuelve a votar la misma película, en lugar de duplicar registros, actualiza su nota anterior.
+        query = """
+        INSERT INTO calificacion (id_pelicula, username, puntuacion, fecha)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(id_pelicula, username) 
+        DO UPDATE SET puntuacion = excluded.puntuacion, fecha = excluded.fecha;
+        """
+        try:
+            # Asumiendo que usas tu método de escritura unificado (execute_query)
+            return self.db.execute_query(query, (id_pelicula, username, puntuacion, fecha_actual))
+        except Exception as e:
+            print(f"Error al guardar calificación: {e}")
+            return False
+
+    
+    
+    def obtener_promedio_calificacion(self, id_pelicula: str):
+        """
+        Calcula el promedio de las puntuaciones de una película y cuenta el total de votos.
+        Devuelve un diccionario con el promedio redondeado y el total de valoraciones.
+        """
+
+        # El método obtener_promedio_calificacion consulta de forma rápida el promedio matemático de las estrellas 
+        # y el número total de personas que han valorado esa película en concreto.
+        query = """
+        SELECT AVG(puntuacion) as promedio, COUNT(*) as total_votos 
+        FROM calificacion 
+        WHERE id_pelicula = ?;
+        """
+        try:
+            resultados = self.db.fetch_query(query, (id_pelicula,))
+            if resultados and resultados[0]["promedio"] is not None:
+                promedio = round(resultados[0]["promedio"], 1) # Redondeado a un decimal (ej. 4.2)
+                total_votos = resultados[0]["total_votos"]
+                return {"promedio": promedio, "total_votos": total_votos}
+            return {"promedio": 0.0, "total_votos": 0}
+        except Exception as e:
+            print(f"Error al calcular el promedio de calificación: {e}")
+            return {"promedio": 0.0, "total_votos": 0}

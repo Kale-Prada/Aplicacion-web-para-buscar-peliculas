@@ -1,4 +1,4 @@
-#Búsqueda de películas y e información (detalles) 
+#Búsqueda de películas e información (detalles) 
 
 from fastapi import APIRouter, HTTPException
 from app.model import MovieModel

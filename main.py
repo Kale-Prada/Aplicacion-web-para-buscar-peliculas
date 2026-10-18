@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 #Importando los routers desde la carpeta 'app'
-from app.routers import auth, peliculas, comentarios
+from app.routers import auth, peliculas, comentarios, calificaciones
 
 # Inicializamos la aplicación FastAPI
 app = FastAPI(
@@ -18,6 +18,7 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 app.include_router(auth.router)
 app.include_router(peliculas.router)
 app.include_router(comentarios.router)
+app.include_router(calificaciones.router)
 
 @app.get("/")
 def home():

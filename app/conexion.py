@@ -114,8 +114,9 @@ class DatabaseConnection:
 
     def _init_database(self):
         """
-        Crea las tablas 'comentario' y 'usuario' en la BBDD 'app/bd/moviesearch.db' al iniciar la App, si no existe en la base de datos.
-        En mi ejercicio yo tengo creada la base de datos y las tablas 'comentario' y 'usuario' con SQlite. 
+        Crea las tablas 'comentario', 'usuario' y 'calificaciones' en la BBDD 'app/bd/moviesearch.db' al iniciar la App, si no existe en la base de datos.
+        En mi ejercicio yo tengo creada la base de datos y las tablas 'comentario' y 'usuario' con SQlite. En cuanto a 'calificaciones' he aprovechado la función
+        para crearla. 
         Como es una acción de guardar/crear, utilizo la función 'execute_query'.
         """
         query_tabla_comentario = """
@@ -131,6 +132,7 @@ class DatabaseConnection:
         """
         self.execute_query(query_tabla_comentario)
 
+        
         #Creo la tabla 'usuario' para la autenticación e ingreso a la búsqueda de películas y poder dejar comentarios. 
         #Ya no les volverá a pedir el usuario o nombre cuando vayan a introducir un comentario. 
 
@@ -138,9 +140,26 @@ class DatabaseConnection:
             CREATE TABLE IF NOT EXISTS usuario (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,     -- Identificador único para el login (ej. 'lucas1980')
-                nombre_a_mostrar TEXT NOT NULL,     -- Nombre visible en los comentarios (ej. 'Lucas Prada', admite espacios y símbolos)
+                nombre_a_mostrar TEXT NOT NULL,     -- Nombre visible en los comentarios (ej. 'Lucas Santana', admite espacios y símbolos)
                 password TEXT NOT NULL
             )
         """
         self.execute_query(query_tabla_usuario)
 
+        
+        # Sentencia SQL para crear la tabla de 'calificaciones'
+        # Para que SQLite almacene las estrellas y puntuaciones de los usuarios vinculadas a cada película y usuario, 
+        # es necesario crear la tabla respetando las relaciones que ya se tienen (username como clave foránea).
+
+        query_crear_tabla_calificacion = """
+            CREATE TABLE IF NOT EXISTS calificacion (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_pelicula TEXT NOT NULL,   -- Almacenará el imdbID de la película (ej. tt0234215) para asociar la nota directamente a esa ficha.
+                username TEXT NOT NULL,   -- Garantiza mediante la clave foránea (FOREIGN KEY) que solo un usuario registrado pueda puntuar.
+                puntuacion INTEGER CHECK(puntuacion >= 1 AND puntuacion <= 5),    -- Un valor entero estricto del 1 al 5 (CHECK).
+                fecha TEXT NOT NULL,
+                FOREIGN KEY (username) REFERENCES usuario(username),
+                UNIQUE(id_pelicula, username) -- Opcional: Para permitir que un usuario solo puntúe una vez por película (actualizando su nota si repite). Evita duplicados
+        );
+        """
+        self.execute_query(query_crear_tabla_calificacion)

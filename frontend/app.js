@@ -359,6 +359,30 @@ async function verDetallePelicula(imdbId) {
                 <p class="small text-muted mb-1"><strong>Premios:</strong> <span class="fw-normal small">${pelicula.Awards || 'Ninguno'}</span></p>
                 <p class="small text-muted mb-0"><strong>Taquilla (BoxOffice):</strong> <span class="fw-normal small">${pelicula.BoxOffice || 'N/A'}</span></p>
             </div>
+
+        <!-- SECCIÓN DE CALIFICACIONES Y ESTRELLAS -->
+            <div class="card bg-light border-0 p-3 mb-3 rounded-3 shadow-sm">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h6 class="fw-bold text-dark mb-1">⭐ Valoración Media</h6>
+                        <div id="promedio-estrellas-container" class="fs-5 text-warning fw-bold">
+                                Cargando valoraciones...
+                        </div>
+                        </div>
+                        <div class="col-12 col-md-6 text-md-end">
+                        <h6 class="fw-bold text-dark mb-1">¡Valora esta película!</h6>
+                        <div class="btn-group" role="group" aria-label="Calificación de estrellas">
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="calificarPelicula('${pelicula.imdbID}', 1)">1 ⭐</button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="calificarPelicula('${pelicula.imdbID}', 2)">2 ⭐</button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="calificarPelicula('${pelicula.imdbID}', 3)">3 ⭐</button>
+                             <button type="button" class="btn btn-outline-warning btn-sm" onclick="calificarPelicula('${pelicula.imdbID}', 4)">4 ⭐</button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="calificarPelicula('${pelicula.imdbID}', 5)">5 ⭐</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         `;
     } catch (error) {
         console.error("Error al cargar detalle de la película:", error);
@@ -369,6 +393,9 @@ async function verDetallePelicula(imdbId) {
 
     // 2. Cargar comentarios de la película seleccionada
     cargarComentarios(imdbId);
+
+    // Cargar calificaciones de la película seleccionada
+    cargarCalificacionPromedio(imdbId);
 }
 
 async function cargarComentarios(imdbId) {
@@ -586,5 +613,64 @@ function mostrarAlerta(mensaje) {
         modal.show();
     } else {
         mostrarAlerta(mensaje); // Fallback por seguridad si el modal no estuviera cargado
+    }
+}
+
+
+
+
+// Función para cargar y pintar el promedio de calificaciones de la película
+async function cargarCalificacionPromedio(imdbId) {
+    const contenedor = document.getElementById("promedio-estrellas-container");
+    if (!contenedor) return;
+
+    try {
+        const response = await fetch(`${API_URL}/calificaciones/${imdbId}/calificacion`);
+        const data = await response.json();
+
+        if (response.ok) {
+            const estrellasVisuales = "⭐".repeat(Math.round(data.promedio)) || "Sin valoraciones";
+            contenedor.innerHTML = `${data.promedio} / 5 ${estrellasVisuales} <span class="text-muted small">(${data.total_votos} votos)</span>`;
+        } else {
+            contenedor.innerHTML = "No disponible";
+        }
+    } catch (error) {
+        console.error("Error al cargar la calificación:", error);
+        contenedor.innerHTML = "Error al cargar";
+    }
+}
+
+// Función para enviar la puntuación del usuario autenticado
+async function calificarPelicula(imdbId, puntuacion) {
+    // CORREGIDO: Leemos correctamente la clave "usernameActual" con la que guardas la sesión
+    const usernameActual = localStorage.getItem('usernameActual');
+
+    if (!usernameActual) {
+        mostrarAlerta("Debes iniciar sesión arriba para poder calificar una película.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/calificaciones/${imdbId}/calificar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: usernameActual,  // Enviamos el username correcto
+                puntuacion: puntuacion
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            mostrarAlerta(`¡Gracias por tu voto! Has calificado con ${puntuacion} estrellas.`);
+            // Recargamos el promedio actualizado al instante
+            cargarCalificacionPromedio(imdbId);
+        } else {
+            mostrarAlerta(data.detail || "Error al enviar la calificación.");
+        }
+    } catch (error) {
+        console.error("Error de red al calificar:", error);
+        mostrarAlerta("No se pudo conectar con el servidor para guardar la calificación.");
     }
 }
