@@ -175,8 +175,10 @@ async function buscarPeliculas() {
 }
 
 /* ==========================================
-   4. BÚSQUEDA DE PELÍCULAS (Título / Título y Año)
+   4. BÚSQUEDA DE PELÍCULAS (Título / Título y Año) / IMDb ID
    ========================================== */
+
+/* Búsqueda de películas por título */   
 
 async function buscarPeliculasPorTitulo() {
     const query = document.getElementById("input-buscar-titulo").value.trim();
@@ -186,6 +188,7 @@ async function buscarPeliculasPorTitulo() {
     }
 
     try {
+        // Conexión con el endpoint existente
         const response = await fetch(`${API_URL}/peliculas/buscar?titulo=${encodeURIComponent(query)}`);
         const data = await response.json();
         renderizarResultados(data, "titulo");
@@ -194,6 +197,8 @@ async function buscarPeliculasPorTitulo() {
         alert("Hubo un error al realizar la búsqueda.");
     }
 }
+
+/* Búsqueda de películas por título y año */  
 
 async function buscarPeliculasPorTituloYAnio() {
     const titulo = document.getElementById("input-buscar-titulo-anio").value.trim();
@@ -205,7 +210,7 @@ async function buscarPeliculasPorTituloYAnio() {
     }
 
     try {
-        // Conectamos con tu endpoint existente: /api/peliculas/buscar-por-anio?titulo=...&year=...
+        // Conexión con el endpoint existente: /api/peliculas/buscar-por-anio?titulo=...&year=...
         const response = await fetch(`${API_URL}/peliculas/buscar-por-anio?titulo=${encodeURIComponent(titulo)}&year=${encodeURIComponent(year)}`);
         const data = await response.json();
         renderizarResultados(data, "titulo");
@@ -213,6 +218,21 @@ async function buscarPeliculasPorTituloYAnio() {
         console.error("Error al buscar por título y año:", error);
         alert("No se encontraron películas con esos criterios o hubo un error en la red.");
     }
+}
+
+/* Búsqueda de películas por IMDb ID */
+
+async function buscarPeliculaPorImdbId() {
+    const inputImdb = document.getElementById("input-buscar-imdb");
+    const imdbId = inputImdb ? inputImdb.value.trim() : "";
+
+    if (!imdbId) {
+        alert("Por favor, introduce un identificador válido de IMDb (ej. tt0133093).");
+        return;
+    }
+
+    // Como es una búsqueda directa por ID, reutilizo verDetallePelicula para cargar la ficha técnica
+    verDetallePelicula(imdbId);
 }
 
 // Función auxiliar unificada para pintar las tarjetas de películas y mostrar el contador de OMDb
@@ -272,17 +292,24 @@ let currentImdbId = null;
 async function verDetallePelicula(imdbId) {
     currentImdbId = imdbId;
 
-    // Ocultar sección de búsqueda, rejilla y contador, y mostrar la sección de detalle
-    document.getElementById("search-section").classList.add("d-none");
-    document.getElementById("movies-grid").classList.add("d-none");
-    const counterContainer = document.getElementById("search-counter-container");
-    if (counterContainer) counterContainer.classList.add("d-none");
-    document.getElementById("movie-detail-section").classList.remove("d-none");
-
     // 1. Obtener detalles completos de la película mediante el endpoint /api/peliculas/detalle/{imdbId}
     try {
         const resDetalle = await fetch(`${API_URL}/peliculas/detalle/${imdbId}`);
         const pelicula = await resDetalle.json();
+
+        // Validamos si OMDb API devuelve que el ID no existe ("Response": "False") o no trae título
+        if (pelicula.Response === "False" || !pelicula.Title) {
+            alert("El identificador IMDb introducido no existe o no es válido. Por favor, comprueba el ID e introduce otro.");
+            volverInicio(); // Regresa al buscador principal para que pueda intentar con otro ID
+            return;
+        }
+
+        // Ocultar sección de búsqueda, rejilla y contador, y mostrar la sección de detalle
+        document.getElementById("search-section").classList.add("d-none");
+        document.getElementById("movies-grid").classList.add("d-none");
+        const counterContainer = document.getElementById("search-counter-container");
+        if (counterContainer) counterContainer.classList.add("d-none");
+        document.getElementById("movie-detail-section").classList.remove("d-none");
 
         const detailContent = document.getElementById("movie-detail-content");
         // Si no existe la imagen en OMDb ('N/A'), asignamos tu imagen por defecto
@@ -325,11 +352,9 @@ async function verDetallePelicula(imdbId) {
         `;
     } catch (error) {
         console.error("Error al cargar detalle de la película:", error);
-        document.getElementById("movie-detail-content").innerHTML = `
-            <div class="col-12 text-center text-danger">
-                <p>No se pudo cargar la información detallada de la película.</p>
-            </div>
-        `;
+        alert("Hubo un error de conexión al consultar el ID de IMDb.");
+        volverInicio();
+        return;
     }
 
     // 2. Cargar comentarios de la película seleccionada
@@ -426,19 +451,34 @@ function volverInicio() {
     document.getElementById("movie-detail-section").classList.add("d-none");
     document.getElementById("search-section").classList.remove("d-none");
     document.getElementById("movies-grid").classList.remove("d-none");
-    
-    // 2. Limpiar la rejilla de resultados de películas y del contador del total de películas encontradas en OMDb API
     document.getElementById("movies-grid").innerHTML = "";
-    document.getElementById("search-counter-container").classList.add("d-none");
 
-    // 3. Limpiar los inputs de búsqueda de ambas pestañas
+    // 2. Limpiar la rejilla de resultados de películas y del contador del total de películas encontradas en OMDb API
+    /*document.getElementById("movies-grid").innerHTML = "";
+    document.getElementById("search-counter-container").classList.add("d-none");*/
+
+    // 3. Limpiar los inputs de búsqueda de las tres pestañas pestañas
     const inputTitulo = document.getElementById("input-buscar-titulo");
     const inputTituloAnio = document.getElementById("input-buscar-titulo-anio");
     const inputAnio = document.getElementById("input-buscar-anio");
+    const inputImdb = document.getElementById("input-buscar-imdb");
 
     if (inputTitulo) inputTitulo.value = "";
     if (inputTituloAnio) inputTituloAnio.value = "";
     if (inputAnio) inputAnio.value = "";
+    if (inputImdb) inputImdb.value = "";
+
+    /* Oculta de forma dinámica el cuadro indicador del total de resultados (el contador que te dice cuántas 
+    películas se han encontrado en total en OMDb) cuando el usuario decide volver a la pantalla de inicio 
+    o reiniciar su búsqueda. */
+
+    // Busca el elemento que muestra cuántas películas se encontraron consumiendo la API de OMDb API
+    const counterContainer = document.getElementById("search-counter-container");
+
+    //con el if (counterContainer) me aseguro que el contenedor existe em la página donde se intenta modificar
+    // counterContainer.classList.add("d-none") Usa la clase de Bootstrap 'd-none' para que elemento
+    // se oculte visualmente por completo de la pantalla. 
+    //if (counterContainer) counterContainer.classList.add("d-none");
 
     // 4. Restablecer el ID actual de la película seleccionada
     currentImdbId = null;
@@ -449,12 +489,13 @@ function volverInicio() {
    LIMPIEZA Y GESTIÓN DE PESTAÑAS DE BÚSQUEDA
    ========================================== */
 
-// Escuchamos cuando el usuario cambia de pestaña de búsqueda para limpiar campos y resultados
+// Se detecta (escuchando evento) cuando el usuario cambia de pestaña de búsqueda para limpiar campos y resultados
 document.addEventListener("DOMContentLoaded", () => {
     const tabTituloBtn = document.getElementById("tab-titulo");
     const tabAnioBtn = document.getElementById("tab-anio");
+    const tabImdb = document.getElementById("tab-imdb");
 
-    if (tabTituloBtn && tabAnioBtn) {
+    if (tabTituloBtn && tabAnioBtn && tabImdb) {
         tabTituloBtn.addEventListener("click", () => {
             limpiarCamposBusqueda('anio'); // Limpia los de año al ir a título
         });
@@ -462,9 +503,14 @@ document.addEventListener("DOMContentLoaded", () => {
         tabAnioBtn.addEventListener("click", () => {
             limpiarCamposBusqueda('titulo'); // Limpia el de título al ir a año
         });
+
+        tabImdb.addEventListener("click", () => {
+            limpiarCamposBusqueda('titulo'); // Limpia el IMDb ID al ir a ID
+        });
     }
 });
 
+/*
 function limpiarCamposBusqueda(origen) {
     const inputTitulo = document.getElementById("input-buscar-titulo");
     const inputTituloAnio = document.getElementById("input-buscar-titulo-anio");
@@ -480,4 +526,30 @@ function limpiarCamposBusqueda(origen) {
     
     // Opcional: si quieres que al cambiar de pestaña también se limpien los resultados anteriores:
     // if (moviesGrid) moviesGrid.innerHTML = "";
+}
+*/
+
+function limpiarOtrasPestañas(pestañaActiva) {
+    const inputTitulo = document.getElementById("input-buscar-titulo");
+    const inputTituloAnio = document.getElementById("input-buscar-titulo-anio");
+    const inputAnio = document.getElementById("input-buscar-anio");
+    const inputImdb = document.getElementById("input-buscar-imdb");
+
+    // Si estás en Título, limpiamos Año e IMDb
+    if (pestañaActiva === 'titulo') {
+        if (inputTituloAnio) inputTituloAnio.value = "";
+        if (inputAnio) inputAnio.value = "";
+        if (inputImdb) inputImdb.value = "";
+    }
+    // Si estás en Título y Año, limpiamos Título e IMDb
+    else if (pestañaActiva === 'anio') {
+        if (inputTitulo) inputTitulo.value = "";
+        if (inputImdb) inputImdb.value = "";
+    }
+    // Si estás en IMDb ID, limpiamos Título y los campos de Año
+    else if (pestañaActiva === 'imdb') {
+        if (inputTitulo) inputTitulo.value = "";
+        if (inputTituloAnio) inputTituloAnio.value = "";
+        if (inputAnio) inputAnio.value = "";
+    }
 }

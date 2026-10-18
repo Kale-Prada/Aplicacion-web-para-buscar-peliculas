@@ -11,17 +11,26 @@
 <body class="bg-light d-flex flex-column min-vh-100">
 
     <!-- NAVBAR / AUTENTICACIÓN RESPONSIVE -->
-    <nav class="navbar navbar-dark bg-dark shadow-sm mb-4">
+     <!-- los colores de la página se obtienen de Bootstrap-->
+     <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+     <!--<nav class="navbar navbar-dark bg-info shadow-sm mb-4"> -->
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4 text-truncate" href="#" onclick="volverInicio()">🎬 MovieSearch</a>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="volverInicio()">
+                <!--Logo Kale App-->
+                <img src="/frontend/imgs/logo-kale-app.png" alt="Kale App" style="height: 40px; object-fit: contain;">
+                <!--<span class="fw-bold fs-4 text-white"></span>--> <!--Texto o titulo en el header-->
+            </a>
             
             <div id="auth-container" class="d-flex align-items-center">
                 <!-- Se mostrará el formulario de login/registro o el saludo de usuario según el estado -->
                 <div id="logged-out-section" class="d-flex gap-2">
-                    <button class="btn btn-outline-light btn-sm px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Entrar</button>
+                    <!-- Botón entrar-->
+                    <button class="btn btn-outline-dark btn-sm px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Entrar</button>
+                    <!--Botón de registro-->
                     <button class="btn btn-warning btn-sm px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#registroModal">Registro</button>
                 </div>
-                <div id="logged-in-section" class="d-none text-white d-flex align-items-center gap-2">
+                <!-- Sección de usuario logueado: Cambiamos text-white por text-dark -->
+                <div id="logged-in-section" class="d-none text-dark d-flex align-items-center gap-2">
                     <span class="small d-none d-sm-inline">Hola, <strong id="user-display-name"></strong></span>
                     <button class="btn btn-outline-danger btn-sm" onclick="cerrarSesion()">Salir</button>
                 </div>
@@ -36,20 +45,27 @@
         <div id="search-section" class="row justify-content-center mb-5">
             <div class="col-12 col-md-10 col-lg-8 text-center px-3">
                 <h1 class="display-5 fw-bold mb-3">Encuentra tu película</h1>
-                <p class="text-muted mb-4">Busca rápidamente por título o afina tu búsqueda combinando año y título.</p>
+                <p class="text-muted mb-4">Busca rápidamente por título, afina tu búsqueda combinando año y título o introduce directamente el IMDb ID si lo conoces.</p>
                 
-                <!-- Pestañas de tipo de búsqueda -->
+                <!-- Pestañas de tipo de búsqueda (son 3 opciones) -->
                 <ul class="nav nav-pills justify-content-center mb-3" id="searchTabs" role="tablist">
+                    <!-- Búsqueda por título de la película-->
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active btn-sm" id="tab-titulo" data-bs-toggle="pill" data-bs-target="#content-titulo" type="button" role="tab">Solo Título</button>
                     </li>
+                    <!--Búsqueda por título y año de la película-->
                     <li class="nav-item" role="presentation">
                         <button class="nav-link btn-sm" id="tab-anio" data-bs-toggle="pill" data-bs-target="#content-anio" type="button" role="tab">Título y Año</button>
+                    </li>
+                    <!--Búsqueda por IMDb ID de la película-->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link btn-sm" id="tab-imdb" data-bs-toggle="pill" data-bs-target="#content-imdb" type="button" role="tab">Por IMDb ID</button>
                     </li>
                 </ul>
 
                 <!-- Contenido de las pestañas -->
                 <div class="tab-content" id="searchTabsContent">
+
                     <!-- Búsqueda 1: Solo por Título -->
                     <div class="tab-pane fade show active" id="content-titulo" role="tabpanel">
                         <div class="input-group shadow-sm">
@@ -72,6 +88,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Búsqueda 3: directa por IMDb ID -->
+                    <div class="tab-pane fade" id="content-imdb" role="tabpanel">
+                        <div class="input-group shadow-sm">
+                            <input type="text" id="input-buscar-imdb" class="form-control form-control-lg fs-6" placeholder="Ej. tt0133093">
+                            <button class="btn btn-primary px-4 fw-semibold" onclick="buscarPeliculaPorImdbId()">Buscar ID</button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -86,7 +110,7 @@
             </div>
         </div>
 
-        
+
         <!-- RESULTADOS DE BÚSQUEDA (GRID RESPONSIVE DE BOOTSTRAP) -->
         <!-- row-cols-1 en móviles, row-cols-sm-2 en tablets, row-cols-md-3 en portátiles, row-cols-lg-4 en escritorios -->
         <div id="movies-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
