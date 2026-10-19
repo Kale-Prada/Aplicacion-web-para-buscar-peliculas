@@ -618,7 +618,7 @@ function mostrarAlerta(mensaje) {
 
 
 
-
+/*
 // Función para cargar y pintar el promedio de calificaciones de la película
 async function cargarCalificacionPromedio(imdbId) {
     const contenedor = document.getElementById("promedio-estrellas-container");
@@ -639,6 +639,43 @@ async function cargarCalificacionPromedio(imdbId) {
         contenedor.innerHTML = "Error al cargar";
     }
 }
+*/
+
+// Función para cargar y pintar el promedio de calificaciones de la película
+async function cargarCalificacionPromedio(imdbId) {
+    const contenedor = document.getElementById("promedio-estrellas-container");
+    if (!contenedor) return;
+
+    try {
+        const response = await fetch(`${API_URL}/calificaciones/${imdbId}/calificacion`);
+        const data = await response.json();
+
+        if (response.ok) {
+            const notaRedondeada = Math.round(data.promedio);
+            let estrellasHTML = "";
+
+            if (notaRedondeada > 0) {
+                // Generamos tantas estrellas rellenas de Bootstrap como indique el promedio
+                for (let i = 0; i < notaRedondeada; i++) {
+                    estrellasHTML += `<i class="bi bi-star-fill text-warning"></i> `;
+                }
+            } else {
+                estrellasHTML = `<span class="text-muted small">Sin valoraciones</span>`;
+            }
+
+            contenedor.innerHTML = `${data.promedio} / 5 &nbsp; ${estrellasHTML} <span class="text-muted small">(${data.total_votos} votos)</span>`;
+        } else {
+            contenedor.innerHTML = "No disponible";
+        }
+    } catch (error) {
+        console.error("Error al cargar la calificación:", error);
+        contenedor.innerHTML = "Error al cargar";
+    }
+}
+
+
+
+
 
 // Función para enviar la puntuación del usuario autenticado
 async function calificarPelicula(imdbId, puntuacion) {
@@ -646,7 +683,7 @@ async function calificarPelicula(imdbId, puntuacion) {
     const usernameActual = localStorage.getItem('usernameActual');
 
     if (!usernameActual) {
-        mostrarAlerta("Debes iniciar sesión arriba para poder calificar una película.");
+        mostrarAlerta("Debes iniciar sesión para poder calificar una película.");
         return;
     }
 

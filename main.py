@@ -6,7 +6,7 @@ from app.routers import auth, peliculas, comentarios, calificaciones
 
 # Inicializamos la aplicación FastAPI
 app = FastAPI(
-    title="API de búsqueda de películas y mostrar/dejar comentarios",
+    title="API - Kale App: búsqueda de películas, comentarios y calificaciones",
     description="Backend con Routers, MVC y FastAPI - By Kale",
     version="1.0.0"
 )
