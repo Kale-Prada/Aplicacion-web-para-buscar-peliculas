@@ -7,15 +7,16 @@ from app.conexion import DatabaseConnection
 
 class MovieModel:
     def __init__(self):
-        self.api_key = "749ee767"
+        self.api_key = "749ee767"    #con la biblioteca 'python-dotenv' puedo ocultar la API KEY. Lo dejo en pendings para la próxima rama de la API. 
         self.base_url = "http://www.omdbapi.com"
         self.db = DatabaseConnection()
 
 
     def buscar_usuario(self, username: str):
         """
-        Para acceder al buscador de películas es necesario entrar con usuario y contraseña, 
-        de no tenerlos, hay que registrarse y así poder comentar las películas.  
+        Para poder comentar una película y calificarla es necesario entrar con usuario y contraseña, 
+        de no tenerlos, hay que registrarse primero y luego autenticarse.
+        No es necesario estar autenticado para buscar las películas y ver comentarios de otros usuarios.   
         Esta función busca el usuario por su 'username' único.
         
         """
@@ -53,7 +54,9 @@ class MovieModel:
 
 
     def buscar_usuario_por_username(self, username: str):
-        """Busca al usuario estrictamente por su username de login."""
+        """
+        Busca al usuario estrictamente por su username de login.
+        """
         try:
             query = "SELECT id, username, nombre_a_mostrar, password FROM usuario WHERE username = ?"
             return self.db.fetch_one(query, (username.strip().lower(),))
@@ -189,7 +192,7 @@ class MovieModel:
     def obtener_promedio_calificacion(self, id_pelicula: str):
         """
         Calcula el promedio de las puntuaciones de una película y cuenta el total de votos.
-        Devuelve un diccionario con el promedio redondeado y el total de valoraciones.
+        Devuelve el promedio redondeado y el total de valoraciones.
         """
 
         # El método obtener_promedio_calificacion consulta de forma rápida el promedio matemático de las estrellas 

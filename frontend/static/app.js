@@ -151,7 +151,7 @@ async function buscarPeliculas() {
         // OMDb devuelve un objeto con la propiedad "Search" si encuentra resultados
         if (data.Search && Array.isArray(data.Search)) {
             data.Search.forEach(pelicula => {
-                const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
+                const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/static/imgs/poster-pelicula-kale.jpg";
                 
                 const col = document.createElement("div");
                 col.className = "col";
@@ -260,14 +260,15 @@ function renderizarResultados(data, tipoBusqueda = "título") {
 
         data.Search.forEach(pelicula => {
             // Si OMDb devuelve "N/A", uso mi propio poster
-            const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
+            const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/static/imgs/poster-pelicula-kale.jpg";
             
             const col = document.createElement("div");
             col.className = "col";
             col.innerHTML = `
                 <div class="card h-100 shadow-sm" style="cursor: pointer;" onclick="verDetallePelicula('${pelicula.imdbID}')">
-                    <!-- onerror captura el error 404 de la imagen externa y carga mi poster con  'temporalmente no disponible' -->
-                    <img src="${poster}" class="card-img-top" alt="${pelicula.Title}" style="height: 350px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
+
+                    <!-- onerror captura el error HTTP 404 de la imagen externa y carga mi poster con una imagen que indica: 'temporalmente no disponible' -->
+                    <img src="${poster}" class="card-img-top" alt="${pelicula.Title}" style="height: 350px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/static/imgs/poster-no-disponible-temporalmente.jpg';">
                     <div class="card-body">
                         <h5 class="card-title fs-6 text-truncate">${pelicula.Title}</h5>
                         <p class="card-text text-muted small">${pelicula.Year}</p>
@@ -323,13 +324,13 @@ async function verDetallePelicula(imdbId) {
 
         const detailContent = document.getElementById("movie-detail-content");
         // Si no existe la imagen en OMDb ('N/A'), asignamos tu imagen por defecto
-        const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/imgs/poster-pelicula-kale.jpg";
+        const poster = pelicula.Poster !== "N/A" ? pelicula.Poster : "/frontend/static/imgs/poster-pelicula-kale.jpg";
 
         // Renderizamos toda la ficha técnica detallada adaptada de forma responsiva
         detailContent.innerHTML = `
             <div class="col-12 col-md-4 text-center">
                 <!-- onerror captura el error 404 si la URL de la API falla al descargar -->
-                <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/imgs/poster-no-disponible-temporalmente.jpg';">
+                <img src="${poster}" class="img-fluid rounded shadow mb-3 mb-md-0" alt="${pelicula.Title}" style="max-height: 450px; object-fit: cover;" onerror="this.onerror=null; this.src='/frontend/static/imgs/poster-no-disponible-temporalmente.jpg';">
             </div>
             <div class="col-12 col-md-8">
                 <h2 class="fw-bold mb-2">${pelicula.Title} <span class="text-muted fs-4">(${pelicula.Year})</span></h2>
