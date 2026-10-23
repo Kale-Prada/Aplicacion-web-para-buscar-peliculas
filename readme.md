@@ -192,7 +192,9 @@ Una vez tengamos la API KEY, podemos:
     Donde:
 
     - Poder calificar la película de 1 a 5 puntos, esto lo podemos presentar en la vista Frontend de detalle sacando un promedio de todas las calificaciones hechas sobre una película, en una vista de estrellas.
+    <br>
     - En ```id_película```, guardar el id de la película para poder relacionar los datos guardados en nuestra base de datos y los de la API.
+    <br>
     - En ```fecha```, guardar la fecha y hora actual/local del servidor.  
 <br>
 
@@ -325,7 +327,12 @@ Una vez tengamos la API KEY, podemos:
 
     ![FastAPI & Swagger UI](/frontend/static/readme_imgs/fastapi_swagger_UI.jpg)
 
-10. Disfruta del buscador de películas y todas sus funcionalidades. 
+
+## ¡Disfruta del buscador de películas y todas sus funcionalidades! Un ejemplo para ver comentarios y calificaciones: 
+
+- **Por película:** escribe  ```monsters inc ```, te mostrará varios resultados, mira el primero. 
+- **Por título y año:** escribe en título:  ```matrix ``` y en año:  ```1999 ```, mira la primera coincidencia. 
+- **Por IMBd:** busca por ejemplo:  ```tt0120737```
 
 
 
