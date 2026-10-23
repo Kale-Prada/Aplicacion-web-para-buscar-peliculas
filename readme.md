@@ -95,6 +95,11 @@ kale-app/
 
 - ***IMPORTANTE: No es necesario estar autenticado para buscar las películas y ver comentarios de otros usuarios.***
 
+- Al realizar la búsqueda se mostrará el total de registros encontrados al consumir OMDb API. Pero solo se pagina 10 ya que así lo tiene restringido OMDB API. 
+Por ejemplo, al buscar por título ```batman```, sale: 
+
+![Total búsquedas con OBDb API](/frontend/static/readme_imgs/total_busquedas_ombd_api.png)
+
 - **UX (experiencia de usuario)** al presentar alertas al usuario en ventanas emergentes mostrando mensajes de acuerdo a la acción, pintado con Bootstrap 
 
 ![Mostrar alertas](/frontend/static/readme_imgs/mostrar_alertas.png)
