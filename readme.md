@@ -333,6 +333,114 @@ Una vez tengamos la API KEY, podemos:
     ![FastAPI & Swagger UI](/frontend/static/readme_imgs/fastapi_swagger_UI.jpg)
 
 
+## 📌 Rutas de la API (Endpoints)
+
+La API está desarrollada con **FastAPI** y organizada modularmente mediante `APIRouter`. Todas las rutas principales están prefijadas bajo el espacio de nombres `/api`.
+
+---
+
+### 👤 1. Autenticación y Usuarios (`/api/usuarios`)
+Gestiona el registro de nuevos usuarios y el inicio de sesión seguro.
+
+*   **`POST /api/usuarios/registrar`**
+    *   **Descripción:** Registra un nuevo usuario en la base de datos asegurando la unicidad del `username`.
+    *   **Body (JSON):**
+        ```json
+        {
+            "username": "anamr26",
+            "nombre_a_mostrar": "Ana María",
+            "password": "mi_password"
+        }
+        ```
+    *   **Respuestas:** 
+        *   `200 OK`: Usuario registrado con éxito.
+        *   `400/500`: Error por campos vacíos o colisión de usuario.
+
+*   **`POST /api/usuarios/login`**
+    *   **Descripción:** Valida las credenciales de acceso de un usuario existente.
+    *   **Body (JSON):**
+        ```json
+        {
+            "username": "mariodediego298",
+            "password": "mi_password"
+        }
+        ```
+    *   **Respuestas:**
+        *   `200 OK`: Devuelve el mensaje de bienvenida, el `username` y el `usuario` (nombre a mostrar) para guardar en el cliente (`localStorage`).
+        *   `401`: Credenciales incorrectas.
+
+---
+
+### 🎬 2. Películas y OMDb (`/api/peliculas`)
+Conecta la aplicación backend con el servicio externo de la OMDb API.
+
+*   **`GET /api/peliculas/buscar`**
+    *   **Descripción:** Busca películas de forma exclusiva por su título o nombre.
+    *   **Parámetros Query:** `?titulo=nombre_pelicula`
+    *   **Respuesta:** Objeto JSON directo devuelto por OMDb (con la propiedad `Search` y `totalResults`).
+
+*   **`GET /api/peliculas/buscar-por-anio`**
+    *   **Descripción:** Realiza una búsqueda combinada filtrando por título y un año específico.
+    *   **Parámetros Query:** `?titulo=nombre_pelicula&year=2020`
+    *   **Respuesta:** Coincidencias de OMDb adaptadas a los criterios.
+
+*   **`GET /api/peliculas/detalle/{imdb_id}`**
+    *   **Descripción:** Recupera la ficha técnica completa y detallada de una película específica a través de su identificador único de IMDb.
+    *   **Parámetros de Ruta:** `imdb_id` (ej. `tt0133093`)
+    *   **Respuesta:** JSON detallado con sinopsis, director, actores, géneros, taquilla, premios y puntuación de IMDb.
+
+---
+
+### 💬 3. Comentarios (`/api/comentarios`)
+Gestiona las opiniones de los usuarios vinculadas a cada película.
+
+*   **`GET /api/comentarios/{imdb_id}`**
+    *   **Descripción:** Lista todos los comentarios realizados en una película específica, ordenados del más reciente al más antiguo, incluyendo un `JOIN` con la tabla de usuarios para mostrar su nombre visible y la puntuación de estrellas asociada si la hubiera.
+    *   **Parámetros de Ruta:** `imdb_id`
+
+*   **`POST /api/comentarios/{imdb_id}`**
+    *   **Descripción:** Permite a un usuario autenticado enviar un nuevo comentario. Valida estrictamente que el usuario exista en la base de datos.
+    *   **Parámetros de Ruta:** `imdb_id`
+    *   **Body (JSON):**
+        ```json
+        {
+            "username": "lolalolita123",
+            "comentario": "¡Me encantó esta película!"
+        }
+        ```
+    *   **Respuestas:**
+        *   `200 OK`: Comentario guardado con éxito (registrando la marca de tiempo local).
+        *   `403 Forbidden`: Si el usuario no está registrado o no ha iniciado sesión.
+
+---
+
+### ⭐ 4. Calificaciones y Sistema de Estrellas (`/api/calificaciones`)
+Gestiona el sistema de puntuaciones de 1 a 5 estrellas por usuario.
+
+*   **`GET /api/calificaciones/{imdb_id}/calificacion`**
+    *   **Descripción:** Calcula y devuelve el promedio matemático actual de las estrellas otorgadas a una película y el conteo total de votos.
+    *   **Parámetros de Ruta:** `imdb_id`
+    *   **Respuesta (JSON):**
+        ```json
+        {
+            "promedio": 4.2,
+            "total_votos": 15
+        }
+        ```
+
+*   **`POST /api/calificaciones/{imdb_id}/calificar`**
+    *   **Descripción:** Inserta o actualiza la puntuación (de 1 a 5) de un usuario para una película concreta (aprovechando una restricción `UNIQUE` en base de datos para actualizar la nota si ya votó previamente).
+    *   **Parámetros de Ruta:** `imdb_id`
+    *   **Body (JSON):**
+        ```json
+        {
+            "username": "alexcp21",
+            "puntuacion": 5
+        }
+        ```
+    *   **Respuesta:** `200 OK` indicando éxito en el registro de la valoración.
+
+
 ## ¡Disfruta del buscador de películas y todas sus funcionalidades! Un ejemplo para ver comentarios y calificaciones: 
 
 - **Por película:** escribe  ```monsters inc ```, te mostrará varios resultados, mira el primero. 
