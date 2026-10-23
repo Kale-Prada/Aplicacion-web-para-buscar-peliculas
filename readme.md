@@ -1,4 +1,4 @@
-# Proyecto final Bootcamp Aprender a programar desde cero XXVI con Keepcoding: Aplicación web para buscar películas por nombre, nombre y año e ID
+# Proyecto final Bootcamp "Aprender a programar desde cero ed. XXVI con Keepcoding": aplicación web para buscar películas por nombre, nombre & año e ID
 
 ## Aspecto visual: 
 
@@ -107,7 +107,7 @@ Una vez tengamos la API KEY, podemos:
 - Búsqueda de películas por título y año.
 - Búsqueda de películas por ```'ombd_id'``` (ID de la película)
 - Dentro de la lista al darle click poder visualizar el detalle de la película seleccionada.
-- Si estás autenticado con usuario y contraseña, se puede dajr comentarios y calificar la película. 
+- Si estás autenticado con usuario y contraseña, se puede dejar comentarios y calificar la película. 
 - Realizar búsquedas y leer comentarios de una película sin tener que estar autenticado.  
 <br> 
 
