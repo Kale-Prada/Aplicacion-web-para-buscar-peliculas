@@ -1,4 +1,9 @@
-# Proyecto final Bootcamp "Aprender a programar desde cero ed. XXVI con Keepcoding": aplicación web para buscar películas por nombre, nombre & año e ID
+# Proyecto final Bootcamp "Aprender a programar desde cero ed. XXVI con Keepcoding"
+
+**Kale App** es una aplicación web de búsqueda, comentarios y valoración de películas desarrollada en Python para el Bootcamp de programación cero con Python de Keepcoding. La lógica se plantea bajo la estructura MVC (Modelo-Vista-Controlador) que combina el backend modular en FastAPI y base de datos SQLite, conectada con la OMDb API (https://www.omdbapi.com/), junto a una interfaz frontend responsiva construida con [Bootstrap](https://getbootstrap.com/) y JavaScript.
+
+La aplicación cuenta con un diseño personalizado, un sistema de autenticación de usuarios, comentarios interactivos con calificaciones por estrellas y un mecanismo de control de errores para garantizar una experiencia visual clara y agradable para el usuario (UX).
+
 
 ## Aspecto visual: 
 
@@ -70,8 +75,8 @@ con ```'onerror'``` captura el error HTTP 404 de la imagen externa y carga mi po
 
 **Logo en colores corporativos y blanco:** 
 
-![Kale App logo](/frontend/static/imgs/logo-kale-app.png) <br>
-![Kale App logo](/frontend/static/imgs/logo-kale-app-blanco.png) <br>
+![Kale App logo](/frontend/static/readme_imgs/logo-kale-app-400px.jpg) <br>
+![Kale App logo](/frontend/static/readme_imgs/logo-kale-app-blanco-400px.jpg) <br>
 
 
 **Favicon:** 
@@ -163,7 +168,8 @@ Una vez tengamos la API KEY, podemos:
 - Framework CSS [Bootstrap](https://getbootstrap.com/)    
 - Link para API externa de información de películas https://www.omdbapi.com/
 - Utilizar el patrón para la arquitectura del proyecto MVC.
-- Implementar control de errores.
+- Implementación de control de errores.
+- Implementación de carpeta ```test``` y pruebas con ```pytest```
 
 
 ## Detalles para ejecutar  *"Kale App - Buscador de películas"* en tu entorno
