@@ -10,7 +10,56 @@ La aplicación cuenta con un diseño personalizado, un sistema de autenticación
 ![Portada Kale App](/frontend/static/readme_imgs/vista_principal_kale_app.jpg)
 
 
+## Estructura de la aplicación "Kale App - Búsqueda de películas"
 
+```text
+kale-app/
+│
+├── app/
+│   ├── bd/
+│   │   └── create_tables.sql       # Comandos SQL para crear la Base de datos en SQLite (tablas usuario, comentario, calificacion)
+│   │   └── moviesearch.db          # Base de datos SQLite (tablas usuario, comentario, calificacion)
+│   │  
+│   ├── routers/
+│   │   ├── auth.py                 # Router de autenticación (Login y Registro)
+│   │   ├── calificaciones.py       # Router para gestión de sistema de puntuación/estrellas
+│   │   ├── comentarios.py          # Router para gestión de comentarios de películas
+│   │   ├── peliculas.py            # Router de consultas a OMDb API (Búsqueda y Detalle)
+│   │   
+│   │   
+│   ├── conexion.py                 # Conexión a SQLite y creación de tablas (Patrón DRY)
+│   └── model.py                    # Lógica de la aplicación e interacción con OMDb API y BBDD
+│
+├── frontend/
+│   └── static/
+│       ├── imgs/
+│       │   ├── keepcoding_logo.png # Logo corporativo para el pie de página
+│       │   ├── favicon.png         # Icono de pestaña del navegador
+│       │   ├── logo-kale-app-blanco.jpg # Logo en blanco
+│       │   ├── logo-kale-app.jpg   # Imagen cabecera logo
+│       │   ├── portada-banner.jpg  # Banner de portada Kale App
+│       │   ├── poster-pelicula-kale.jpg # Imagen de respaldo local para posters (N/A)
+│       │   └── poster-no-disponible-temporalmente.jpg # Imagen para errores 404
+│       ├──readme_imgs/                # Imágenes para el readme.md
+│       ├──app.js                      # Lógica de cliente (peticiones Fetch, DOM, localStorage)
+│       └──index.html                  # Interfaz principal de usuario (Bootstrap 5, Modales, Hero Banner)
+│
+│
+├── history/                        # Historial del código que he ido creando antes de llegar a la aplicación definitiva
+│
+├── tests/
+│   ├── test_calificaciones.py      # Pruebas sobre las calificaciones
+│   ├── test_conexion.py            # Pruebas unitarias de la base de datos
+│   └── test_model.py               # Pruebas de integración con Pytest
+│
+├── .gitignore                      # Exclusiones de Git
+├── main.py                         # Punto de entrada principal de FastAPI
+├── readme.md                       # Documentación general de la aplicación
+└── requirements.txt                # Dependencias del proyecto (FastAPI, Uvicorn, Requests, Pytest...)
+
+
+
+```
 ## De acuerdo a las especificaciones del proyecto final del bootcamp
 
 ## ¿Qué debe hacer mi programa?
